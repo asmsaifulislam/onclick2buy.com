@@ -1,0 +1,236 @@
+@import 'tailwindcss';
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    --color-glow: #6366f1;
+    --color-glow-light: #a5b4fc;
+}
+
+@keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+@keyframes pulseGlow {
+    0%, 100% { box-shadow: 0 0 5px var(--color-glow), 0 0 10px var(--color-glow-light); }
+    50% { box-shadow: 0 0 15px var(--color-glow), 0 0 25px var(--color-glow-light); }
+}
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+@keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+}
+
+.animate-fade-in-up { animation: fadeInUp 0.6s ease-out both; }
+.animate-fade-in { animation: fadeIn 0.5s ease-out both; }
+.animate-pulse-glow { animation: pulseGlow 2s ease-in-out infinite; }
+.animate-float { animation: float 3s ease-in-out infinite; }
+.animate-delay-1 { animation-delay: 0.1s; }
+.animate-delay-2 { animation-delay: 0.2s; }
+.animate-delay-3 { animation-delay: 0.3s; }
+.animate-delay-4 { animation-delay: 0.4s; }
+
+.card-3d {
+    perspective: 1000px;
+}
+.card-3d-inner {
+    transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform-style: preserve-3d;
+}
+.card-3d:hover .card-3d-inner {
+    transform: rotateY(3deg) rotateX(3deg) scale(1.02);
+}
+.card-3d:hover {
+    z-index: 10;
+}
+
+.product-card {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.product-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 0 20px 40px rgba(99, 102, 241, 0.15), 0 8px 20px rgba(0,0,0,0.1);
+}
+.product-card:hover .product-img {
+    transform: scale(1.08);
+}
+.product-img {
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.nav-blur {
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    background: rgba(255,255,255,0.85);
+}
+
+.hero-gradient {
+    background: linear-gradient(135deg, #1e1b4b 0%, #312e81 25%, #4338ca 50%, #6366f1 75%, #818cf8 100%);
+    background-size: 400% 400%;
+    animation: shimmer 8s ease infinite;
+}
+@keyframes shimmer {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.glass {
+    background: rgba(255,255,255,0.15);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.btn-primary {
+    @apply bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold py-2.5 px-6 rounded-xl;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+}
+.btn-primary:hover {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+}
+.btn-primary:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.btn-outline {
+    @apply border-2 border-indigo-600 text-indigo-600 font-semibold py-2.5 px-6 rounded-xl;
+    transition: all 0.3s ease;
+}
+.btn-outline:hover {
+    @apply bg-indigo-600 text-white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+}
+
+.category-card {
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    overflow: hidden;
+}
+.category-card:hover {
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 16px 32px rgba(99, 102, 241, 0.2);
+}
+.category-card img {
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.category-card:hover img {
+    transform: scale(1.12);
+}
+
+.badge-sale {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3);
+}
+
+.input-field {
+    @apply w-full border border-gray-200 rounded-xl px-4 py-3;
+    transition: all 0.3s ease;
+    background: rgba(255,255,255,0.8);
+}
+.input-field:focus {
+    @apply border-indigo-400 ring-2 ring-indigo-100 outline-none;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.1);
+}
+
+.admin-card {
+    transition: all 0.3s ease;
+}
+.admin-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #1e1b4b, #312e81);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.stat-card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 16px 32px rgba(49, 46, 129, 0.3);
+}
+
+.image-zoom {
+    overflow: hidden;
+}
+.image-zoom img {
+    transition: transform 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.image-zoom:hover img {
+    transform: scale(1.05);
+}
+
+.pagination-custom nav .flex a,
+.pagination-custom nav .flex span {
+    @apply px-4 py-2 rounded-lg font-medium;
+    transition: all 0.3s ease;
+}
+.pagination-custom nav .flex a:hover {
+    @apply bg-indigo-100 text-indigo-700;
+    transform: translateY(-1px);
+}
+
+.cart-item {
+    transition: all 0.3s ease;
+}
+.cart-item:hover {
+    @apply bg-indigo-50;
+    transform: translateX(4px);
+}
+
+.order-status-badge {
+    @apply px-3 py-1 text-xs font-semibold rounded-full;
+    transition: all 0.3s ease;
+}
+
+.flash-message {
+    animation: fadeInUp 0.4s ease-out, fadeIn 0.3s ease-out;
+    backdrop-filter: blur(8px);
+}
+
+.sidebar-link {
+    transition: all 0.3s ease;
+    position: relative;
+}
+.sidebar-link:hover {
+    @apply bg-indigo-600;
+    transform: translateX(4px);
+}
+.sidebar-link.active {
+    @apply bg-indigo-600;
+    box-shadow: inset 4px 0 0 #c7d2fe;
+}
+
+.scroll-fade-in {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.6s ease-out;
+}
+.scroll-fade-in.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.table-row {
+    transition: all 0.2s ease;
+}
+.table-row:hover {
+    @apply bg-indigo-50;
+}
+
+.footer-gradient {
+    background: linear-gradient(135deg, #0f0f23, #1a1a3e, #0f0f23);
+}
