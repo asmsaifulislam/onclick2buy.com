@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'admin@admin.com',
             'password' => bcrypt('password'),
             'is_admin' => true,
+            'role' => 'admin',
         ]);
 
         User::create([
@@ -27,6 +28,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'user@user.com',
             'password' => bcrypt('password'),
             'is_admin' => false,
+            'role' => 'customer',
         ]);
 
         $categories = [
