@@ -56,4 +56,10 @@ class CategoryController extends Controller
         $category->delete();
         return back()->with('success', 'Category deleted!');
     }
+    public function toggleStatus(Category $category)
+    {
+        $category->update(['is_active' => !$category->is_active]);
+        $status = $category->is_active ? 'activated' : 'deactivated';
+        return back()->with('success', "Category {$status} successfully!");
+    }
 }

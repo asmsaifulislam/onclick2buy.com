@@ -8,9 +8,15 @@ class AdminMiddleware
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!Auth::check() || !Auth::user()->isAdmin()) {
-            abort(403, 'Unauthorized access.');
+        if (!Auth::check()) {
+            return redirect()->route('login');
         }
+
+        $user = Auth::user();
+        if ($user->role !== 'admin') {
+            abort(403, 'You do not have permission to access the admin panel.');
+        }
+
         return $next($request);
     }
 }

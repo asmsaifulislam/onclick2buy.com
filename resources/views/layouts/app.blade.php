@@ -17,6 +17,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="{{ $metaDesc }}">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', $storeName)</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -153,5 +154,152 @@
             </div>
         </div>
     </footer>
+
+    {{-- Live Chat Widget --}}
+    <div id="chat-widget" class="fixed bottom-6 right-6 z-50 font-sans">
+        {{-- Chat Toggle Button --}}
+        <button id="chat-toggle" onclick="toggleChat()" class="w-14 h-14 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110">
+            <svg id="chat-icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+            <svg id="chat-icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            <span id="chat-unread" class="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 hidden items-center justify-center">0</span>
+        </button>
+
+        {{-- Chat Window --}}
+        <div id="chat-window" class="hidden absolute bottom-20 right-0 w-[380px] max-w-[calc(100vw-3rem)] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden" style="height: 500px;">
+            {{-- Header --}}
+            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm">Need Help?</h3>
+                        <p class="text-xs text-white/80">We typically reply within minutes</p>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Messages --}}
+            <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50" style="height: 370px;">
+                <div class="text-center">
+                    <span class="text-xs text-gray-400 bg-white px-3 py-1 rounded-full">Today</span>
+                </div>
+            </div>
+
+            {{-- Input --}}
+            <div class="border-t border-gray-200 p-3 bg-white">
+                <form id="chat-send-form" class="flex items-center gap-2">
+                    <input type="text" id="chat-message-input" placeholder="Type a message..." class="flex-1 border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent" autocomplete="off">
+                    <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl w-10 h-10 flex items-center justify-center transition-colors flex-shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        let chatOpen = false;
+        let sessionId = null;
+        let visitorId = null;
+        let lastMessageId = 0;
+        let chatInitialized = false;
+
+        window.toggleChat = function() {
+            chatOpen = !chatOpen;
+            document.getElementById('chat-window').classList.toggle('hidden', !chatOpen);
+            document.getElementById('chat-icon-open').classList.toggle('hidden', chatOpen);
+            document.getElementById('chat-icon-close').classList.toggle('hidden', !chatOpen);
+            if (chatOpen && !chatInitialized) initChat();
+        };
+
+        function addChatMessage(msg) {
+            const container = document.getElementById('chat-messages');
+            const isVisitor = !msg.is_admin;
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flex ' + (isVisitor ? 'justify-end' : 'justify-start');
+            const bubble = isVisitor
+                ? 'bg-indigo-600 text-white rounded-br-md'
+                : 'bg-white text-gray-800 border border-gray-200 rounded-bl-md shadow-sm';
+            wrapper.innerHTML = `
+                <div class="max-w-[85%]">
+                    <div class="px-3 py-2 rounded-2xl ${bubble}">
+                        <p class="text-sm">${escapeHtml(msg.message)}</p>
+                    </div>
+                    <p class="text-[10px] text-gray-400 mt-0.5 ${isVisitor ? 'text-right' : ''}">${escapeHtml(msg.sender)} &middot; ${msg.created_at}</p>
+                </div>`;
+            container.appendChild(wrapper);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function initChat() {
+            chatInitialized = true;
+            try {
+                const res = await fetch('/chat/session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({}),
+                });
+                const data = await res.json();
+                sessionId = data.session_id;
+                visitorId = data.visitor_id;
+                lastMessageId = data.messages.length > 0 ? data.messages[data.messages.length - 1].id : 0;
+                data.messages.forEach(m => addChatMessage(m));
+                if (data.messages.length === 0) {
+                    addChatMessage({ message: 'Hello! How can we help you today?', is_admin: true, sender: 'Support', created_at: new Date().toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit'}) });
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        document.getElementById('chat-send-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-message-input');
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = '';
+            if (!chatInitialized) await initChat();
+            try {
+                const res = await fetch('/chat/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ message: text, visitor_id: visitorId, session_id: sessionId }),
+                });
+                const data = await res.json();
+                if (data.id) {
+                    lastMessageId = data.id;
+                    addChatMessage(data);
+                }
+            } catch(e) { console.error(e); }
+        });
+
+        setInterval(async () => {
+            if (!chatOpen || !sessionId) return;
+            try {
+                const res = await fetch('/chat/poll?session_id=' + sessionId + '&last_id=' + lastMessageId, {
+                    headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                });
+                const data = await res.json();
+                if (data.messages && data.messages.length > 0) {
+                    data.messages.forEach(m => { if (m.id > lastMessageId) { lastMessageId = m.id; addChatMessage(m); } });
+                }
+            } catch(e) {}
+        }, 5000);
+
+        function escapeHtml(text) {
+            const d = document.createElement('div');
+            d.textContent = text;
+            return d.innerHTML;
+        }
+    })();
+    </script>
 </body>
 </html>

@@ -82,4 +82,10 @@ class ProductController extends Controller
         $product->delete();
         return back()->with('success', 'Product deleted!');
     }
+    public function toggleStatus(Product $product)
+    {
+        $product->update(['is_active' => !$product->is_active]);
+        $status = $product->is_active ? 'activated' : 'deactivated';
+        return back()->with('success', "Product {$status} successfully!");
+    }
 }

@@ -54,6 +54,12 @@
                         <td class="px-5 py-4">
                             <div class="flex items-center gap-2">
                                 <a href="{{ route('admin.products.edit', $product) }}" class="px-3 py-1.5 bg-indigo-50 text-indigo-600 rounded-lg text-sm font-medium hover:bg-indigo-100 transition-colors">Edit</a>
+                                <form action="{{ route('admin.products.toggle-status', $product) }}" method="POST">
+                                    @csrf @method('PATCH')
+                                    <button type="submit" class="px-3 py-1.5 rounded-lg text-sm font-medium transition-colors {{ $product->is_active ? 'bg-yellow-50 text-yellow-700 hover:bg-yellow-100' : 'bg-green-50 text-green-700 hover:bg-green-100' }}">
+                                        {{ $product->is_active ? 'Deactivate' : 'Activate' }}
+                                    </button>
+                                </form>
                                 <form action="{{ route('admin.products.destroy', $product) }}" method="POST" onsubmit="return confirm('Delete this product?')">
                                     @csrf @method('DELETE')
                                     <button type="submit" class="px-3 py-1.5 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 transition-colors">Delete</button>
