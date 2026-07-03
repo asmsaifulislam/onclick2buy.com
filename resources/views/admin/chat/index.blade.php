@@ -33,7 +33,7 @@
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center justify-between">
                                 <h3 class="font-semibold text-gray-900 truncate">{{ $s->display_name }}</h3>
-                                <span class="text-xs text-gray-400 flex-shrink-0 ml-2">{{ $s->last_message_at ? $s->last_message_at->diffForHumans() : '' }}</span>
+                                <span class="text-xs text-gray-400 flex-shrink-0 ml-2">{{ $s->last_message_at ? \Carbon\Carbon::parse($s->last_message_at)->diffForHumans() : '' }}</span>
                             </div>
                             <div class="flex items-center justify-between mt-0.5">
                                 <p class="text-sm text-gray-500 truncate">{{ $s->latestMessage?->message ?? 'No messages yet' }}</p>
