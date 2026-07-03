@@ -15,7 +15,7 @@ class RoleMiddleware
             return redirect()->route('login');
         }
 
-        if ($user->role === 'admin') {
+        if ($user->isAdmin()) {
             return $next($request);
         }
 

@@ -13,7 +13,7 @@ class AdminMiddleware
         }
 
         $user = Auth::user();
-        if ($user->role !== 'admin') {
+        if (!$user->isAdmin()) {
             abort(403, 'You do not have permission to access the admin panel.');
         }
 

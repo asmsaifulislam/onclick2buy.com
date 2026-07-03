@@ -17,25 +17,25 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->role === 'admin';
+        return $this->is_admin;
     }
 
     public function isCustomer(): bool
     {
-        return $this->role === 'customer';
+        return !$this->is_admin;
     }
 
     public function isGuest(): bool
     {
-        return $this->role === 'guest';
+        return false;
     }
 
     public function canAccessPage(string $pageKey): bool
     {
-        if ($this->role === 'admin') {
+        if ($this->is_admin) {
             return true;
         }
-        return PagePermission::where('role', $this->role)
+        return PagePermission::where('role', 'customer')
             ->where('page_key', $pageKey)
             ->where('can_view', true)
             ->exists();
