@@ -59,6 +59,13 @@ services:
              echo '0 * * * * php /var/www/html/bin/console mautic:social:monitoring' >> /etc/cron.d/mautic &&
              echo '0 * * * * php /var/www/html/bin/console mautic:webhook:process' >> /etc/cron.d/mautic &&
              cron -f"
+    environment:
+      MAUTIC_DB_HOST: mautic-db
+      MAUTIC_DB_PORT: 3306
+      MAUTIC_DB_NAME: mautic
+      MAUTIC_DB_USER: mautic
+      MAUTIC_DB_PASSWORD: mautic_secret_password
+      MAUTIC_DB_DRIVER: pdo_mysql
     volumes:
       - mautic_data:/var/www/html
     depends_on:
