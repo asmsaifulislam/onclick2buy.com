@@ -1,12 +1,20 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\User;
+use App\Services\MauticService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    protected $mautic;
+
+    public function __construct(MauticService $mautic)
+    {
+        $this->mautic = $mautic;
+    }
+
     public function showLogin()
     {
         return view('auth.login');
@@ -43,6 +51,14 @@ class AuthController extends Controller
             'password' => Hash::make($request->password),
             'role' => 'customer',
         ]);
+
+        // Sync to Mautic
+        $this->mautic->createOrUpdateContact([
+            'email' => $user->email,
+            'firstname' => $user->name,
+            'tags' => ['new-user', 'registered'],
+        ]);
+
         Auth::login($user);
         return redirect()->route('home');
     }

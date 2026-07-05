@@ -12,6 +12,10 @@ class ProductController extends Controller
         $products = Product::with('category')->latest()->paginate(10);
         return view('admin.products.index', compact('products'));
     }
+    public function show(Product $product)
+    {
+        return redirect()->route('admin.products.edit', $product);
+    }
     public function create()
     {
         $categories = Category::active()->get();

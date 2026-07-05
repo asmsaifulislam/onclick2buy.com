@@ -3,12 +3,20 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Services\MauticService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 class CheckoutController extends Controller
 {
+    protected $mautic;
+
+    public function __construct(MauticService $mautic)
+    {
+        $this->mautic = $mautic;
+    }
+
     public function index()
     {
         $cartItems = Cart::with('product')->where('session_id', session()->getId())->orWhere('user_id', Auth::id())->get();
@@ -49,6 +57,23 @@ class CheckoutController extends Controller
                 $item->product->decrement('stock', $item->quantity);
                 $item->delete();
             }
+
+            // Track order in Mautic
+            $user = Auth::user();
+            $this->mautic->trackOrder([
+                'email' => $user->email ?? '',
+                'firstname' => $user->name ?? '',
+                'lastname' => '',
+                'order_id' => $order->id,
+                'total' => $total,
+                'products' => $cartItems->map(function ($item) {
+                    return [
+                        'name' => $item->product->name,
+                        'price' => $item->product->sale_price ?: $item->product->price,
+                        'quantity' => $item->quantity,
+                    ];
+                })->toArray(),
+            ]);
         });
         return redirect()->route('checkout.success')->with('order_success', true);
     }
