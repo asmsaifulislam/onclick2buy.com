@@ -13,7 +13,6 @@ services:
       MAUTIC_DB_USER: mautic
       MAUTIC_DB_PASSWORD: mautic_secret_password
       MAUTIC_DB_DRIVER: pdo_mysql
-      MAUTIC_TRUSTED_PROXIES: '["172.16.0.0/12"]'
       MAUTIC_MAINTENANCE_MODE: 0
     volumes:
       - mautic_data:/var/www/html
