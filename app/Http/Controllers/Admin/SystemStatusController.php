@@ -121,10 +121,10 @@ class SystemStatusController extends Controller
         $services['prometheus'] = $this->checkPort('Prometheus Monitoring', 'Monitoring', '127.0.0.1', '9090', '/api/v1/query?up');
 
         // Grafana
-        $services['grafana'] = $this->checkPort('Grafana Dashboard', 'Monitoring', '127.0.0.1', '3000', '/api/health');
+        $services['grafana'] = $this->checkPort('Grafana Dashboard', 'Monitoring', '127.0.0.1', '3001', '/api/health');
 
         // Mautic
-        $mauticUrl = Config::get('mautic.url', 'http://localhost:8080');
+        $mauticUrl = Config::get('mautic.url', 'http://127.0.0.1:8090');
         $services['mautic'] = [
             'name' => 'Mautic Marketing',
             'status' => $this->checkUrl($mauticUrl) ? 'healthy' : 'offline',
@@ -391,11 +391,11 @@ class SystemStatusController extends Controller
         $connections[] = [
             'service' => 'Mautic',
             'type' => 'Marketing',
-            'host' => Config::get('mautic.url', 'http://localhost:8080'),
-            'port' => '8080',
+            'host' => Config::get('mautic.url', 'http://127.0.0.1:8090'),
+            'port' => '8090',
             'database' => 'mautic_db',
             'username' => Config::get('mautic.username', 'admin'),
-            'status' => $this->checkUrl(Config::get('mautic.url', 'http://localhost:8080')),
+            'status' => $this->checkUrl(Config::get('mautic.url', 'http://127.0.0.1:8090')),
         ];
 
         // ERPNext

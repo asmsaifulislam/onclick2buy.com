@@ -139,7 +139,7 @@ class ServiceHealthController extends Controller
     private function checkMautic()
     {
         try {
-            $url = Config::get('mautic.url', 'http://localhost:8080');
+            $url = Config::get('mautic.url', 'http://127.0.0.1:8090');
             $response = Http::timeout(3)->get($url);
             return $response->successful() ? 'healthy' : 'error';
         } catch (\Exception $e) {
@@ -207,7 +207,7 @@ class ServiceHealthController extends Controller
     private function testMautic()
     {
         try {
-            $url = Config::get('mautic.url', 'http://localhost:8080');
+            $url = Config::get('mautic.url', 'http://127.0.0.1:8090');
             $response = Http::timeout(3)->get($url);
             if ($response->successful()) {
                 return ['status' => 'healthy', 'message' => "Mautic is running at {$url}"];

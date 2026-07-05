@@ -38,7 +38,7 @@ class AutomationHubController extends Controller
             'status' => $this->checkService('monitoring', 'prometheus', 9090),
             'description' => 'Prometheus metrics collection + Grafana dashboards for server health.',
             'url' => '#monitoring',
-            'config_url' => 'http://localhost:3000',
+            'config_url' => 'http://127.0.0.1:3001',
         ];
 
         // Mautic Marketing
@@ -46,10 +46,10 @@ class AutomationHubController extends Controller
             'name' => 'Marketing Automation',
             'icon' => 'bolt',
             'color' => 'purple',
-            'status' => $this->checkService('mautic', 'mautic', 8080),
+            'status' => $this->checkService('mautic', 'mautic', 8090),
             'description' => 'Email campaigns, lead scoring, cart abandonment recovery.',
             'url' => route('admin.mautic.index'),
-            'config_url' => 'http://localhost:8080',
+            'config_url' => 'http://127.0.0.1:8090',
         ];
 
         // ERPNext
