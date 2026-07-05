@@ -1,0 +1,75 @@
+services:
+  # Mautic Marketing Automation
+  mautic:
+    image: mautic/mautic:latest
+    container_name: mautic
+    restart: unless-stopped
+    ports:
+      - "8090:80"
+    environment:
+      MAUTIC_DB_HOST: mautic-db
+      MAUTIC_DB_PORT: 3306
+      MAUTIC_DB_NAME: mautic
+      MAUTIC_DB_USER: mautic
+      MAUTIC_DB_PASSWORD: mautic_secret_password
+      MAUTIC_DB_DRIVER: pdo_mysql
+      MAUTIC_TRUSTED_PROXIES: 172.16.0.0/12
+      MAUTIC_MAINTENANCE_MODE: 0
+    volumes:
+      - mautic_data:/var/www/html
+    depends_on:
+      mautic-db:
+        condition: service_healthy
+    networks:
+      - mautic-network
+
+  # MySQL Database for Mautic
+  mautic-db:
+    image: mariadb:10.11
+    container_name: mautic-db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root_secret_password
+      MYSQL_DATABASE: mautic
+      MYSQL_USER: mautic
+      MYSQL_PASSWORD: mautic_secret_password
+    volumes:
+      - mautic_db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - mautic-network
+
+  # Cron for Mautic background tasks
+  mautic-cron:
+    image: mautic/mautic:latest
+    container_name: mautic-cron
+    restart: unless-stopped
+    command: >
+      sh -c "echo '0 * * * * php /var/www/html/bin/console mautic:segments:update' > /etc/cron.d/mautic &&
+             echo '0 * * * * php /var/www/html/bin/console mautic:campaigns:update' >> /etc/cron.d/mautic &&
+             echo '0 * * * * php /var/www/html/bin/console mautic:campaigns:trigger' >> /etc/cron.d/mautic &&
+             echo '*/5 * * * * php /var/www/html/bin/console mautic:emails:send' >> /etc/cron.d/mautic &&
+             echo '0 0 * * * php /var/www/html/bin/console mautic:iplookup:rebuild' >> /etc/cron.d/mautic &&
+             echo '0 0 * * * php /var/www/html/bin/console mautic:import' >> /etc/cron.d/mautic &&
+             echo '0 * * * * php /var/www/html/bin/console mautic:social:monitoring' >> /etc/cron.d/mautic &&
+             echo '0 * * * * php /var/www/html/bin/console mautic:webhook:process' >> /etc/cron.d/mautic &&
+             cron -f"
+    volumes:
+      - mautic_data:/var/www/html
+    depends_on:
+      - mautic
+    networks:
+      - mautic-network
+
+volumes:
+  mautic_data:
+  mautic_db_data:
+
+networks:
+  mautic-network:
+    driver: bridge

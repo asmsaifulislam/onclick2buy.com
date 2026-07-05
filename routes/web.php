@@ -21,6 +21,13 @@ use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Admin\ChatController as AdminChatController;
 use App\Http\Controllers\Admin\ProductPunchController;
 use App\Http\Controllers\Admin\ProductOrderController;
+use App\Http\Controllers\MauticController;
+use App\Http\Controllers\ErpNextController;
+use App\Http\Controllers\AiAgentController;
+use App\Http\Controllers\RecommendationController;
+use App\Http\Controllers\Admin\AutomationHubController;
+use App\Http\Controllers\Admin\ServiceHealthController;
+use App\Http\Controllers\Admin\SystemStatusController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
@@ -48,6 +55,13 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/automation-hub', [AutomationHubController::class, 'index'])->name('automation-hub');
+    Route::get('/service-health', [ServiceHealthController::class, 'index'])->name('service-health');
+    Route::get('/service-health/check', [ServiceHealthController::class, 'checkAll'])->name('service-health.check');
+    Route::get('/service-health/test/{service}', [ServiceHealthController::class, 'testService'])->name('service-health.test');
+    Route::get('/system-status', [SystemStatusController::class, 'index'])->name('system-status');
+    Route::get('/system-status/api', [SystemStatusController::class, 'api'])->name('system-status.api');
+    Route::post('/system-status/promotion', [SystemStatusController::class, 'createPromotion'])->name('system-status.create-promo');
     Route::resource('categories', AdminCategoryController::class)->except('show');
     Route::patch('/categories/{category}/toggle-status', [AdminCategoryController::class, 'toggleStatus'])->name('categories.toggle-status');
     Route::resource('products', AdminProductController::class)->except('show');
@@ -127,3 +141,68 @@ Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->
 Route::post('/chat/session', [ChatController::class, 'session'])->name('chat.session');
 Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
 Route::get('/chat/poll', [ChatController::class, 'poll'])->name('chat.poll');
+
+// Mautic Marketing Automation Routes
+Route::post('/mautic/webhook', [MauticController::class, 'webhook'])->name('mautic.webhook');
+Route::post('/mautic/track/page', [MauticController::class, 'trackPage'])->name('mautic.track.page');
+Route::post('/mautic/track/product', [MauticController::class, 'trackProductView'])->name('mautic.track.product');
+Route::post('/mautic/track/cart-abandonment', [MauticController::class, 'trackCartAbandonment'])->name('mautic.track.cart-abandonment');
+
+// Mautic Admin Routes
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/mautic', [MauticController::class, 'index'])->name('mautic.index');
+    Route::get('/mautic/test', [MauticController::class, 'testConnection'])->name('mautic.test');
+    Route::get('/mautic/contacts', [MauticController::class, 'getContacts'])->name('mautic.contacts');
+    Route::post('/mautic/sync', [MauticController::class, 'syncContact'])->name('mautic.sync');
+});
+
+// ERPNext Integration Routes
+Route::post('/erpnext/webhook', [ErpNextController::class, 'webhook'])->name('erpnext.webhook');
+
+// ERPNext Admin Routes
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/erpnext', [ErpNextController::class, 'index'])->name('erpnext.index');
+    Route::get('/erpnext/test', [ErpNextController::class, 'testConnection'])->name('erpnext.test');
+    Route::post('/erpnext/sync/products', [ErpNextController::class, 'syncProducts'])->name('erpnext.sync.products');
+    Route::post('/erpnext/sync/product/{product}', [ErpNextController::class, 'syncProduct'])->name('erpnext.sync.product');
+    Route::post('/erpnext/sync/customers', [ErpNextController::class, 'syncCustomers'])->name('erpnext.sync.customers');
+    Route::post('/erpnext/sync/orders', [ErpNextController::class, 'syncOrders'])->name('erpnext.sync.orders');
+    Route::post('/erpnext/sync/inventory', [ErpNextController::class, 'syncInventory'])->name('erpnext.sync.inventory');
+    Route::get('/erpnext/items', [ErpNextController::class, 'getItems'])->name('erpnext.items');
+    Route::get('/erpnext/customers', [ErpNextController::class, 'getCustomers'])->name('erpnext.customers');
+    Route::get('/erpnext/orders', [ErpNextController::class, 'getSalesOrders'])->name('erpnext.orders');
+    Route::get('/erpnext/warehouses', [ErpNextController::class, 'getWarehouses'])->name('erpnext.warehouses');
+    Route::get('/erpnext/stock', [ErpNextController::class, 'getStockBalance'])->name('erpnext.stock');
+});
+
+// AI Agent Routes
+Route::post('/api/ai/chat', [AiAgentController::class, 'chat'])->name('ai.chat');
+Route::post('/api/botframework/messages', [AiAgentController::class, 'botframeworkWebhook'])->name('ai.botframework.webhook');
+
+// AI Agent Admin Routes
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/ai-agents', [AiAgentController::class, 'index'])->name('ai-agents.index');
+    Route::get('/ai-agents/status', [AiAgentController::class, 'status'])->name('ai-agents.status');
+    Route::get('/ai-agents/test', [AiAgentController::class, 'testConnection'])->name('ai-agents.test');
+    Route::get('/ai-agents/provider', [AiAgentController::class, 'getProvider'])->name('ai-agents.provider');
+    Route::post('/ai-agents/provider', [AiAgentController::class, 'setProvider'])->name('ai-agents.provider.set');
+    Route::post('/ai-agents/train', [AiAgentController::class, 'trainRasa'])->name('ai-agents.train');
+});
+
+// Recommendation Engine Routes
+Route::get('/api/recommendations', [RecommendationController::class, 'getRecommendations'])->name('recommendations.get');
+Route::get('/api/recommendations/user/{userId}', [RecommendationController::class, 'forUser'])->name('recommendations.for-user');
+Route::get('/api/recommendations/similar/{productId}', [RecommendationController::class, 'similar'])->name('recommendations.similar');
+Route::get('/api/recommendations/popular', [RecommendationController::class, 'popular'])->name('recommendations.popular');
+Route::get('/api/recommendations/trending', [RecommendationController::class, 'trending'])->name('recommendations.trending');
+Route::get('/api/recommendations/product/{productId}', [RecommendationController::class, 'productWidget'])->name('recommendations.product-widget');
+Route::post('/api/recommendations/rate', [RecommendationController::class, 'addRating'])->name('recommendations.rate');
+
+// Recommendation Admin Routes
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/recommendations', [RecommendationController::class, 'index'])->name('recommendations.index');
+    Route::get('/recommendations/test', [RecommendationController::class, 'testConnection'])->name('recommendations.test');
+    Route::get('/recommendations/model', [RecommendationController::class, 'modelInfo'])->name('recommendations.model');
+    Route::post('/recommendations/train', [RecommendationController::class, 'trainModel'])->name('recommendations.train');
+    Route::post('/recommendations/sync', [RecommendationController::class, 'syncRatings'])->name('recommendations.sync');
+});

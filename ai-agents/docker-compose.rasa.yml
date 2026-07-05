@@ -1,0 +1,63 @@
+services:
+  # Rasa Open Source
+  rasa:
+    image: rasa/rasa:3.6.0-full
+    container_name: rasa
+    restart: unless-stopped
+    ports:
+      - "5005:5005"
+    volumes:
+      - ./rasa/app:/app
+    command:
+      - run
+      - --enable-api
+      - --cors
+      - "*"
+      - --debug
+    depends_on:
+      rasa-action:
+        condition: service_healthy
+    networks:
+      - ai-network
+
+  # Rasa Action Server
+  rasa-action:
+    image: rasa/rasa-sdk:3.6.0
+    container_name: rasa-action
+    restart: unless-stopped
+    ports:
+      - "5055:5055"
+    volumes:
+      - ./rasa/app/actions:/app/actions
+    command:
+      - start
+      - --actions
+      - actions
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5055/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - ai-network
+
+  # Rasa Training
+  rasa-train:
+    image: rasa/rasa:3.6.0-full
+    container_name: rasa-train
+    volumes:
+      - ./rasa/app:/app
+    command:
+      - train
+      - --domain
+      - /app/domain.yml
+      - --data
+      - /app/data
+      - --out
+      - /app/models
+    networks:
+      - ai-network
+
+networks:
+  ai-network:
+    driver: bridge

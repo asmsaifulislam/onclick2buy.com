@@ -1,0 +1,59 @@
+services:
+  # Botpress Server
+  botpress:
+    image: botpress/botpress:12_26_0
+    container_name: botpress
+    restart: unless-stopped
+    ports:
+      - "3100:3100"
+    environment:
+      - EXTERNAL_URL=http://localhost:3100
+      - BPFS_STORAGE=database
+      - DATABASE_URL=postgres://botpress:botpress_secret@botpress-db:5432/botpress
+      - REDIS_URL=redis://botpress-redis:6379
+    volumes:
+      - botpress_data:/botpress/data
+      - botpress_modules:/botpress/modules
+    depends_on:
+      botpress-db:
+        condition: service_healthy
+      botpress-redis:
+        condition: service_started
+    networks:
+      - ai-network
+
+  # Botpress PostgreSQL Database
+  botpress-db:
+    image: postgres:15-alpine
+    container_name: botpress-db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=botpress
+      - POSTGRES_USER=botpress
+      - POSTGRES_PASSWORD=botpress_secret
+    volumes:
+      - botpress_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U botpress"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ai-network
+
+  # Botpress Redis
+  botpress-redis:
+    image: redis:alpine
+    container_name: botpress-redis
+    restart: unless-stopped
+    networks:
+      - ai-network
+
+volumes:
+  botpress_data:
+  botpress_modules:
+  botpress_db_data:
+
+networks:
+  ai-network:
+    driver: bridge

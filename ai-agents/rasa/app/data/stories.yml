@@ -1,0 +1,83 @@
+version: "3.1"
+
+stories:
+  - story: happy path
+    steps:
+      - intent: greet
+      - action: utter_greet
+      - intent: mood_great
+      - action: utter_happy
+
+  - story: sad path
+    steps:
+      - intent: greet
+      - action: utter_greet
+      - intent: mood_unhappy
+      - action: utter_cheer_up
+      - action: utter_did_that_help
+      - intent: affirm
+      - action: utter_happy
+
+  - story: product inquiry
+    steps:
+      - intent: greet
+      - action: utter_greet
+      - intent: product_inquiry
+      - action: action_product_search
+
+  - story: order status
+    steps:
+      - intent: greet
+      - action: utter_greet
+      - intent: order_status
+      - action: order_status_form
+      - active_loop: order_status_form
+      - action: action_order_tracking
+
+  - story: human handoff
+    steps:
+      - intent: human_handoff
+      - action: utter_human_handoff
+      - action: action_human_handoff
+
+  - story: help
+    steps:
+      - intent: ask_help
+      - action: utter_ask_help
+
+  - story: shipping info
+    steps:
+      - intent: shipping_info
+      - action: utter_shipping_info
+
+  - story: return policy
+    steps:
+      - intent: return_policy
+      - action: utter_return_policy
+
+  - story: payment methods
+    steps:
+      - intent: payment_methods
+      - action: utter_payment_methods
+
+  - story: contact support
+    steps:
+      - intent: contact_support
+      - action: utter_contact_support
+
+rules:
+  - rule: Say goodbye anytime the user says goodbye
+    steps:
+      - intent: goodbye
+      - action: utter_goodbye
+
+  - rule: Say 'I am a bot' anytime the user challenges
+    steps:
+      - intent: bot_challenge
+      - action: utter_bot_challenge
+
+  - rule: Handle human handoff
+    steps:
+      - intent: human_handoff
+      - action: utter_human_handoff
+      - action: action_human_handoff

@@ -1,0 +1,43 @@
+{
+  "$schema": "https://raw.githubusercontent.com/botpress/botpress/v12_26_0/packages/botpress/src/config/schemas/bot.config.schema.json",
+  "id": "ecommerce-bot",
+  "name": "OnClick2Buy Bot",
+  "description": "AI-powered customer support bot for OnClick2Buy",
+  "author": "OnClick2Buy",
+  "version": "1.0.0",
+  "license": "MIT",
+  "language": "en",
+  "imports": {
+    "modules": [],
+    "bots": []
+  },
+  "modules": [
+    {
+      "location": "MODULES/src",
+      "enabled": true
+    }
+  ],
+  "scripts": {
+    "preset": "default"
+  },
+  "messaging": {
+    "channels": [
+      {
+        "id": "web",
+        "name": "Webchat",
+        "enabled": true
+      }
+    ]
+  },
+  "dialog": {
+    "timeout": "5m"
+  },
+  "nlu": {
+    "confidence": 0.6
+  },
+  "events": {
+    "session": {
+      "timeout": "30m"
+    }
+  }
+}

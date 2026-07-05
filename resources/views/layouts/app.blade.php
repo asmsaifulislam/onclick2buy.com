@@ -19,6 +19,27 @@
     <meta name="description" content="{{ $metaDesc }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', $storeName)</title>
+    @if(config('app.google_analytics_id'))
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('app.google_analytics_id') }}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '{{ config('app.google_analytics_id') }}');
+        </script>
+    @endif
+    @if(config('mautic.tracking.enabled') && config('mautic.tracking.pixel_id'))
+        <script>
+            (function() {
+                var defined = null;
+                var script = document.createElement('script');
+                script.type = 'text/javascript';
+                script.async = true;
+                script.src = '{{ config('mautic.base_url') }}/mtc/pixel.js?id={{ config('mautic.tracking.pixel_id') }}';
+                document.getElementsByTagName('head')[0].appendChild(script);
+            })();
+        </script>
+    @endif
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="antialiased bg-gray-50">
@@ -293,6 +314,140 @@
                 }
             } catch(e) {}
         }, 5000);
+
+        function escapeHtml(text) {
+            const d = document.createElement('div');
+            d.textContent = text;
+            return d.innerHTML;
+        }
+    })();
+    </script>
+
+    {{-- AI Chatbot Widget --}}
+    <div id="ai-bot-widget" class="fixed bottom-6 left-6 z-50">
+        <button id="ai-bot-toggle" onclick="toggleAiBot()" class="w-14 h-14 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white rounded-full shadow-xl flex items-center justify-center transition-all duration-300 hover:scale-110">
+            <svg id="ai-bot-icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+            <svg id="ai-bot-icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+
+        <div id="ai-bot-window" class="hidden absolute bottom-20 left-0 w-[380px] max-w-[calc(100vw-3rem)] bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden" style="height: 500px;">
+            <div class="bg-gradient-to-r from-yellow-500 to-orange-500 text-white p-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 bg-white/20 rounded-full flex items-center justify-center">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-sm">AI Assistant</h3>
+                        <p class="text-xs text-white/80">Powered by AI - Ask me anything!</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="ai-bot-messages" class="overflow-y-auto p-4 space-y-3 bg-gray-50" style="height: 370px;">
+                <div class="flex justify-start">
+                    <div class="max-w-[85%]">
+                        <div class="px-3 py-2 rounded-2xl bg-white text-gray-800 border border-gray-200 rounded-bl-md shadow-sm">
+                            <p class="text-sm">Hi! I'm your AI assistant. I can help you find products, track orders, answer questions about our store, and more. What can I help you with?</p>
+                        </div>
+                        <p class="text-[10px] text-gray-400 mt-0.5">AI Bot</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-gray-200 p-3 bg-white">
+                <div class="flex gap-2 mb-2">
+                    <button onclick="sendAiQuick('Find me a product')" class="text-[10px] px-2 py-1 bg-yellow-50 text-yellow-700 rounded-full hover:bg-yellow-100 transition-colors">Find Product</button>
+                    <button onclick="sendAiQuick('Track my order')" class="text-[10px] px-2 py-1 bg-yellow-50 text-yellow-700 rounded-full hover:bg-yellow-100 transition-colors">Track Order</button>
+                    <button onclick="sendAiQuick('What are your deals?')" class="text-[10px] px-2 py-1 bg-yellow-50 text-yellow-700 rounded-full hover:bg-yellow-100 transition-colors">Deals</button>
+                </div>
+                <form id="ai-bot-form" class="flex items-center gap-2">
+                    <input type="text" id="ai-bot-input" placeholder="Ask AI anything..." class="flex-1 border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:border-transparent" autocomplete="off">
+                    <button type="submit" class="bg-yellow-500 hover:bg-yellow-600 text-white rounded-xl w-10 h-10 flex items-center justify-center transition-colors flex-shrink-0">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        let aiBotOpen = false;
+        let aiSessionId = null;
+
+        window.toggleAiBot = function() {
+            aiBotOpen = !aiBotOpen;
+            document.getElementById('ai-bot-window').classList.toggle('hidden', !aiBotOpen);
+            document.getElementById('ai-bot-icon-open').classList.toggle('hidden', aiBotOpen);
+            document.getElementById('ai-bot-icon-close').classList.toggle('hidden', !aiBotOpen);
+        };
+
+        window.sendAiQuick = function(text) {
+            document.getElementById('ai-bot-input').value = text;
+            document.getElementById('ai-bot-form').dispatchEvent(new Event('submit'));
+        };
+
+        function addAiBotMessage(text, isBot) {
+            const container = document.getElementById('ai-bot-messages');
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flex ' + (isBot ? 'justify-start' : 'justify-end');
+            const bubble = isBot
+                ? 'bg-white text-gray-800 border border-gray-200 rounded-bl-md shadow-sm'
+                : 'bg-yellow-500 text-white rounded-br-md';
+            wrapper.innerHTML = `
+                <div class="max-w-[85%]">
+                    <div class="px-3 py-2 rounded-2xl ${bubble}">
+                        <p class="text-sm">${escapeHtml(text)}</p>
+                    </div>
+                    <p class="text-[10px] text-gray-400 mt-0.5 ${isBot ? '' : 'text-right'}">${isBot ? 'AI Assistant' : 'You'} &middot; ${new Date().toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit'})}</p>
+                </div>`;
+            container.appendChild(wrapper);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function showTyping() {
+            const container = document.getElementById('ai-bot-messages');
+            const typing = document.createElement('div');
+            typing.id = 'ai-typing';
+            typing.className = 'flex justify-start';
+            typing.innerHTML = '<div class="max-w-[85%]"><div class="px-3 py-2 rounded-2xl bg-white border border-gray-200 rounded-bl-md shadow-sm"><div class="flex gap-1"><span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay:0ms"></span><span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay:150ms"></span><span class="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style="animation-delay:300ms"></span></div></div></div>';
+            container.appendChild(typing);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        function removeTyping() {
+            const el = document.getElementById('ai-typing');
+            if (el) el.remove();
+        }
+
+        document.getElementById('ai-bot-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const input = document.getElementById('ai-bot-input');
+            const text = input.value.trim();
+            if (!text) return;
+            input.value = '';
+            addAiBotMessage(text, false);
+            showTyping();
+
+            try {
+                const res = await fetch('/api/ai/chat', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ message: text, session_id: aiSessionId }),
+                });
+                const data = await res.json();
+                removeTyping();
+                if (data.session_id) aiSessionId = data.session_id;
+                addAiBotMessage(data.reply || data.message || 'Sorry, I could not understand that.', true);
+            } catch(err) {
+                removeTyping();
+                addAiBotMessage('I am having trouble connecting. Please try again or contact our support team.', true);
+            }
+        });
 
         function escapeHtml(text) {
             const d = document.createElement('div');

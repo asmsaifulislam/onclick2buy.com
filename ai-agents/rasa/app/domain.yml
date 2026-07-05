@@ -1,0 +1,100 @@
+version: "3.1"
+
+intents:
+  - greet
+  - goodbye
+  - affirm
+  - deny
+  - mood_great
+  - mood_unhappy
+  - bot_challenge
+  - ask_help
+  - product_inquiry
+  - order_status
+  - shipping_info
+  - return_policy
+  - payment_methods
+  - contact_support
+  - faq
+  - human_handoff
+
+entities:
+  - product_name
+  - order_id
+  - email
+  - phone
+  - category
+
+slots:
+  product_name:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: product_name
+  order_id:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: order_id
+  email:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: email
+
+responses:
+  utter_greet:
+    - text: "Hello! Welcome to OnClick2Buy. How can I help you today?"
+    - text: "Hi there! I'm your virtual assistant. What can I do for you?"
+
+  utter_goodbye:
+    - text: "Goodbye! Have a great day!"
+    - text: "Thank you for chatting with us. See you soon!"
+
+  utter_bot_challenge:
+    - text: "I'm an AI assistant powered by Rasa. I can help you with product inquiries, order status, and more!"
+
+  utter_ask_help:
+    - text: "I can help you with:\n- Product information\n- Order status\n- Shipping details\n- Return policy\n- Payment methods\n\nWhat would you like to know?"
+
+  utter_product_inquiry:
+    - text: "I'd be happy to help you find information about our products. What product are you looking for?"
+
+  utter_order_status:
+    - text: "Please provide your order ID and I'll check the status for you."
+
+  utter_shipping_info:
+    - text: "We offer free shipping on orders over $50. Standard delivery takes 3-5 business days. Express shipping is available for an additional fee."
+
+  utter_return_policy:
+    - text: "We accept returns within 30 days of purchase. Items must be unused and in original packaging. Would you like to initiate a return?"
+
+  utter_payment_methods:
+    - text: "We accept:\n- Credit/Debit Cards (Visa, MasterCard, AMEX)\n- PayPal\n- Apple Pay\n- Google Pay\n\nWhich payment method would you like to use?"
+
+  utter_contact_support:
+    - text: "You can reach our support team at:\n- Email: support@onclick2buy.com\n- Phone: 1-800-XXX-XXXX\n- Live Chat: Available 24/7\n\nWould you like me to connect you with a live agent?"
+
+  utter_human_handoff:
+    - text: "I'll connect you with a human agent right away. Please hold on for a moment."
+
+  utter_default:
+    - text: "I'm not sure I understand. Could you please rephrase that?"
+
+actions:
+  - action_product_search
+  - action_order_tracking
+  - action_human_handoff
+
+forms:
+  order_status_form:
+    required_slots:
+      - order_id
+
+  product_search_form:
+    required_slots:
+      - product_name
+
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: true

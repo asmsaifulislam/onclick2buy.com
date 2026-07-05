@@ -1,0 +1,205 @@
+version: "3.1"
+
+nlu:
+  - intent: greet
+    examples: |
+      - hey
+      - hello
+      - hi
+      - good morning
+      - good evening
+      - hey there
+      - what's up
+      - how's it going
+      - hello there
+      - hiya
+      - howdy
+
+  - intent: goodbye
+    examples: |
+      - bye
+      - goodbye
+      - see you later
+      - see you
+      - take care
+      - have a good day
+      - talk to you later
+      - bye bye
+      - cya
+      - catch you later
+
+  - intent: affirm
+    examples: |
+      - yes
+      - yep
+      - yeah
+      - indeed
+      - of course
+      - that sounds good
+      - correct
+      - sure
+      - absolutely
+      - right
+      - y
+      - yup
+
+  - intent: deny
+    examples: |
+      - no
+      - nope
+      - nah
+      - no thanks
+      - not really
+      - no way
+      - negative
+      - I don't think so
+      - I'm good
+      - n
+
+  - intent: mood_great
+    examples: |
+      - I'm doing great
+      - I'm fine
+      - I'm good
+      - perfect
+      - wonderful
+      - amazing
+      - awesome
+      - fantastic
+      - great
+      - I'm happy
+
+  - intent: mood_unhappy
+    examples: |
+      - I'm sad
+      - I'm upset
+      - not good
+      - very sad
+      - unhappy
+      - bad
+      - terrible
+      - horrible
+      - I'm angry
+      - frustrated
+
+  - intent: bot_challenge
+    examples: |
+      - are you a bot?
+      - are you human?
+      - am I talking to a bot?
+      - am I talking to a human?
+      - what are you?
+      - who am I chatting with?
+      - is this a real person?
+      - are you AI?
+
+  - intent: ask_help
+    examples: |
+      - help me
+      - I need help
+      - can you help me?
+      - I need assistance
+      - support
+      - help
+      - what can you do?
+      - what do you do?
+      - how can you help?
+
+  - intent: product_inquiry
+    examples: |
+      - tell me about [iPhone 15](product_name)
+      - do you have [Nike shoes](product_name)?
+      - I'm looking for [laptop](product_name)
+      - what [phones](product_name) do you have?
+      - information about [Samsung Galaxy](product_name)
+      - show me [headphones](product_name)
+      - do you sell [watches](product_name)?
+      - I want to buy [shoes](product_name)
+      - product details for [iPad](product_name)
+      - price of [MacBook Pro](product_name)
+
+  - intent: order_status
+    examples: |
+      - where is my order?
+      - track my order
+      - order status
+      - what's the status of order [ORD-12345678](order_id)?
+      - check order [ORD-87654321](order_id)
+      - when will my order arrive?
+      - shipping status
+      - delivery status
+      - my order hasn't arrived
+      - order tracking
+
+  - intent: shipping_info
+    examples: |
+      - how long is shipping?
+      - what are your shipping options?
+      - shipping information
+      - how much is shipping?
+      - do you offer free shipping?
+      - when will my order ship?
+      - shipping times
+      - delivery options
+      - express shipping
+
+  - intent: return_policy
+    examples: |
+      - what's your return policy?
+      - how do I return an item?
+      - I want to return something
+      - return policy
+      - can I get a refund?
+      - exchange policy
+      - how to return
+      - return an item
+      - money back guarantee
+
+  - intent: payment_methods
+    examples: |
+      - what payment methods do you accept?
+      - do you accept PayPal?
+      - can I pay with credit card?
+      - payment options
+      - how can I pay?
+      - payment methods
+      - do you accept Apple Pay?
+      - payment information
+
+  - intent: contact_support
+    examples: |
+      - how can I contact support?
+      - I need to talk to someone
+      - customer service
+      - contact information
+      - phone number
+      - email address
+      - live chat
+      - speak to a human
+      - talk to an agent
+
+  - intent: human_handoff
+    examples: |
+      - I want to talk to a human
+      - connect me to an agent
+      - transfer me to human
+      - speak to a real person
+      - I need a human agent
+      - live agent please
+      - human support
+      - real person
+
+  - lookup: product_name
+    examples: |
+      - iPhone 15
+      - iPhone 15 Pro
+      - Samsung Galaxy S24
+      - MacBook Pro
+      - iPad
+      - AirPods
+      - Sony WH-1000XM5
+      - Nike Air Max
+      - Adidas Ultraboost
+      - Apple Watch
+      - Dell XPS
+      - HP Spectre

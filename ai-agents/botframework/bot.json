@@ -1,0 +1,40 @@
+{
+  "name": "OnClick2Buy Bot",
+  "appId": "",
+  "appPassword": "",
+  "description": "Microsoft Bot Framework bot for OnClick2Buy",
+  "endpoints": [
+    {
+      "name": "production",
+      "endpointUrl": "https://yourdomain.com/api/botframework/messages",
+      "usesWebApi": true
+    }
+  ],
+  "activityHandlers": [
+    {
+      "type": "message",
+      "handler": "handleMessage"
+    },
+    {
+      "type": "conversationUpdate",
+      "handler": "handleConversationUpdate"
+    }
+  ],
+  "cardActions": [
+    {
+      "type": "messageBack",
+      "title": "Product Search",
+      "text": "/search"
+    },
+    {
+      "type": "messageBack",
+      "title": "Order Status",
+      "text": "/order-status"
+    },
+    {
+      "type": "messageBack",
+      "title": "Contact Support",
+      "text": "/support"
+    }
+  ]
+}

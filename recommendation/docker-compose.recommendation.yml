@@ -1,0 +1,21 @@
+services:
+  # Recommendation Engine
+  recommendation:
+    build: .
+    container_name: recommendation-engine
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./app:/app/app
+      - ./data:/app/data
+      - ./models:/app/models
+    environment:
+      - ENVIRONMENT=production
+      - LOG_LEVEL=info
+    networks:
+      - recommendation-network
+
+networks:
+  recommendation-network:
+    driver: bridge

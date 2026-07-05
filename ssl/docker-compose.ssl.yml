@@ -1,0 +1,49 @@
+services:
+  # Laravel Application
+  app:
+    build: .
+    container_name: laravel-app
+    working_dir: /var/www
+    volumes:
+      - .:/var/www:delegated
+      - /var/www/vendor
+    environment:
+      - DB_CONNECTION=sqlite
+      - APP_ENV=production
+      - APP_DEBUG=false
+    command: php-fpm
+    networks:
+      - app-network
+
+  # Nginx with SSL
+  nginx:
+    image: nginx:alpine
+    container_name: laravel-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - .:/var/www:delegated
+      - ./ssl/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro
+      - ./ssl/certs:/etc/letsencrypt:ro
+      - ./ssl/www:/var/www/certbot:ro
+    depends_on:
+      - app
+    networks:
+      - app-network
+    restart: unless-stopped
+
+  # Certbot for Let's Encrypt SSL
+  certbot:
+    image: certbot/certbot:latest
+    container_name: certbot
+    volumes:
+      - ./ssl/certs:/etc/letsencrypt
+      - ./ssl/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
