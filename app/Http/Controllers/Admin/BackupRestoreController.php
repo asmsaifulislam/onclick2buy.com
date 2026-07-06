@@ -90,38 +90,30 @@ class BackupRestoreController extends Controller
 
     private function zipProject($zip, $root)
     {
-        $excludeDirs = [
-            $root . '/vendor',
-            $root . '/node_modules',
-            $root . '/.git',
-            $root . '/storage/app/backups',
-            $root . '/storage/app/restore_temp',
-        ];
+        $excludes = ['/vendor', '/node_modules', '/.git', '/storage/app/backups', '/storage/app/restore_temp'];
 
-        $files = new \RecursiveIteratorIterator(
-            new \RecursiveDirectoryIterator($root, \RecursiveDirectoryIterator::SKIP_DOTS),
-            \RecursiveIteratorIterator::SELF_FIRST
-        );
-
-        foreach ($files as $file) {
-            $path = $file->getPathname();
-
-            $excluded = false;
-            foreach ($excludeDirs as $exDir) {
-                if (strpos($path, $exDir . DIRECTORY_SEPARATOR) === 0 || $path === $exDir) {
-                    $excluded = true;
-                    break;
+        $dirIterator = new \RecursiveDirectoryIterator($root, \RecursiveDirectoryIterator::SKIP_DOTS);
+        $filter = new \RecursiveCallbackFilterIterator($dirIterator, function ($current, $key, $iterator) use ($root, $excludes) {
+            $rel = str_replace($root, '', $current->getPathname());
+            $rel = str_replace('\\', '/', $rel);
+            foreach ($excludes as $ex) {
+                if ($rel === $ex || strpos($rel, $ex . '/') === 0) {
+                    return false;
                 }
             }
-            if ($excluded) continue;
+            return true;
+        });
 
-            $localPath = str_replace($root . DIRECTORY_SEPARATOR, '', $path);
+        $files = new \RecursiveIteratorIterator($filter, \RecursiveIteratorIterator::SELF_FIRST);
+
+        foreach ($files as $file) {
+            $localPath = str_replace($root . DIRECTORY_SEPARATOR, '', $file->getPathname());
             $localPath = str_replace('\\', '/', $localPath);
 
             if ($file->isDir()) {
                 $zip->addEmptyDir($localPath);
             } else {
-                $zip->addFile($path, $localPath);
+                $zip->addFile($file->getPathname(), $localPath);
             }
         }
     }
