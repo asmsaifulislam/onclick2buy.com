@@ -22,15 +22,25 @@
 
     {{-- Create Backup --}}
     <div class="bg-white rounded-xl shadow border border-gray-200 p-6 mb-8">
-        <h2 class="text-xl font-bold text-gray-900 mb-2">Create a Full Backup</h2>
-        <p class="text-sm text-gray-600 mb-4">Backs up database, uploaded files, and environment config into a single zip archive.</p>
-        <form action="{{ route('admin.backup.create') }}" method="POST">
-            @csrf
-            <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                Create Backup Now
-            </button>
-        </form>
+        <h2 class="text-xl font-bold text-gray-900 mb-2">Create Backup</h2>
+        <div class="grid grid-cols-2 gap-4">
+            <form action="{{ route('admin.backup.create') }}" method="POST">
+                @csrf
+                <p class="text-sm text-gray-600 mb-3">Database, uploaded files, and .env config only.</p>
+                <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white font-medium rounded-lg hover:bg-indigo-700 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Data Backup
+                </button>
+            </form>
+            <form action="{{ route('admin.backup.create-full') }}" method="POST">
+                @csrf
+                <p class="text-sm text-gray-600 mb-3">Entire project (code + data). Excludes vendor, node_modules, .git.</p>
+                <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+                    Full Site Backup
+                </button>
+            </form>
+        </div>
     </div>
 
     {{-- Restore --}}

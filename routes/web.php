@@ -212,6 +212,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/backup-restore', [BackupRestoreController::class, 'index'])->name('backup-restore');
     Route::post('/backup-restore/backup', [BackupRestoreController::class, 'backup'])->name('backup.create');
+    Route::post('/backup-restore/backup-full', [BackupRestoreController::class, 'backupFull'])->name('backup.create-full');
     Route::get('/backup-restore/download/{filename}', [BackupRestoreController::class, 'download'])->name('backup.download');
     Route::post('/backup-restore/restore', [BackupRestoreController::class, 'restore'])->name('backup.restore');
     Route::delete('/backup-restore/delete/{filename}', [BackupRestoreController::class, 'destroy'])->name('backup.delete');

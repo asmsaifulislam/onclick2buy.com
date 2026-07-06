@@ -39,9 +39,21 @@ class BackupRestoreController extends Controller
 
     public function backup()
     {
+        return $this->createBackup('data', false);
+    }
+
+    public function backupFull()
+    {
+        set_time_limit(300);
+        return $this->createBackup('full', true);
+    }
+
+    private function createBackup($type, $includeCode)
+    {
         $timestamp = date('Y-m-d_H-i-s');
         $backupDir = storage_path('app/backups');
-        $backupFile = "{$backupDir}/full-backup-{$timestamp}.zip";
+        $prefix = $type === 'full' ? 'full-site' : 'data-backup';
+        $backupFile = "{$backupDir}/{$prefix}-{$timestamp}.zip";
 
         if (!is_dir($backupDir)) {
             mkdir($backupDir, 0755, true);
@@ -59,7 +71,7 @@ class BackupRestoreController extends Controller
 
         $publicPath = storage_path('app/public');
         if (is_dir($publicPath)) {
-            $this->zipDir($zip, $publicPath, 'public');
+            $this->zipDir($zip, $publicPath, 'storage/app/public');
         }
 
         $envPath = base_path('.env');
@@ -67,9 +79,51 @@ class BackupRestoreController extends Controller
             $zip->addFile($envPath, '.env');
         }
 
+        if ($includeCode) {
+            $this->zipProject($zip, base_path());
+        }
+
         $zip->close();
 
-        return back()->with('success', "Backup created: full-backup-{$timestamp}.zip");
+        return back()->with('success', "Backup created: {$prefix}-{$timestamp}.zip");
+    }
+
+    private function zipProject($zip, $root)
+    {
+        $excludeDirs = [
+            $root . '/vendor',
+            $root . '/node_modules',
+            $root . '/.git',
+            $root . '/storage/app/backups',
+            $root . '/storage/app/restore_temp',
+        ];
+
+        $files = new \RecursiveIteratorIterator(
+            new \RecursiveDirectoryIterator($root, \RecursiveDirectoryIterator::SKIP_DOTS),
+            \RecursiveIteratorIterator::SELF_FIRST
+        );
+
+        foreach ($files as $file) {
+            $path = $file->getPathname();
+
+            $excluded = false;
+            foreach ($excludeDirs as $exDir) {
+                if (strpos($path, $exDir . DIRECTORY_SEPARATOR) === 0 || $path === $exDir) {
+                    $excluded = true;
+                    break;
+                }
+            }
+            if ($excluded) continue;
+
+            $localPath = str_replace($root . DIRECTORY_SEPARATOR, '', $path);
+            $localPath = str_replace('\\', '/', $localPath);
+
+            if ($file->isDir()) {
+                $zip->addEmptyDir($localPath);
+            } else {
+                $zip->addFile($path, $localPath);
+            }
+        }
     }
 
     public function download($filename)
