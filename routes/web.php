@@ -28,6 +28,7 @@ use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\Admin\AutomationHubController;
 use App\Http\Controllers\Admin\ServiceHealthController;
 use App\Http\Controllers\Admin\SystemStatusController;
+use App\Http\Controllers\Admin\BackupRestoreController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/products', [ProductController::class, 'index'])->name('products.index');
@@ -205,4 +206,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/recommendations/model', [RecommendationController::class, 'modelInfo'])->name('recommendations.model');
     Route::post('/recommendations/train', [RecommendationController::class, 'trainModel'])->name('recommendations.train');
     Route::post('/recommendations/sync', [RecommendationController::class, 'syncRatings'])->name('recommendations.sync');
+});
+
+// Backup & Restore Routes
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/backup-restore', [BackupRestoreController::class, 'index'])->name('backup-restore');
+    Route::post('/backup-restore/backup', [BackupRestoreController::class, 'backup'])->name('backup.create');
+    Route::get('/backup-restore/download/{filename}', [BackupRestoreController::class, 'download'])->name('backup.download');
+    Route::post('/backup-restore/restore', [BackupRestoreController::class, 'restore'])->name('backup.restore');
+    Route::delete('/backup-restore/delete/{filename}', [BackupRestoreController::class, 'destroy'])->name('backup.delete');
 });
