@@ -25,6 +25,7 @@ use App\Http\Controllers\MauticController;
 use App\Http\Controllers\ErpNextController;
 use App\Http\Controllers\AiAgentController;
 use App\Http\Controllers\RecommendationController;
+use App\Http\Controllers\SSLCommerzController;
 use App\Http\Controllers\Admin\AutomationHubController;
 use App\Http\Controllers\Admin\ServiceHealthController;
 use App\Http\Controllers\Admin\SystemStatusController;
@@ -46,6 +47,12 @@ Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('c
 
 Route::get('/payment/{order}', [PaymentController::class, 'show'])->name('payment.show');
 Route::post('/payment/{order}', [PaymentController::class, 'process'])->name('payment.process');
+
+// SSLCommerz Callbacks
+Route::post('/sslcommerz/success/{order}', [SSLCommerzController::class, 'success'])->name('sslcommerz.success');
+Route::post('/sslcommerz/fail/{order}', [SSLCommerzController::class, 'fail'])->name('sslcommerz.fail');
+Route::post('/sslcommerz/cancel/{order}', [SSLCommerzController::class, 'cancel'])->name('sslcommerz.cancel');
+Route::post('/sslcommerz/ipn/{order}', [SSLCommerzController::class, 'ipn'])->name('sslcommerz.ipn');
 
 Route::post('/products/{product}/reviews', [ReviewController::class, 'store'])->name('products.reviews.store')->middleware('auth');
 
