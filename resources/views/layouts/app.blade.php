@@ -20,6 +20,13 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', $storeName)</title>
     @if(config('app.google_analytics_id'))
+        <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('app.google_analytics_id') }}"></script>
+        <script>
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '{{ config('app.google_analytics_id') }}');
+        </script>
         <script>
             document.addEventListener('DOMContentLoaded', function() {
                 if (navigator.sendBeacon) {
