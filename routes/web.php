@@ -26,6 +26,7 @@ use App\Http\Controllers\ErpNextController;
 use App\Http\Controllers\AiAgentController;
 use App\Http\Controllers\RecommendationController;
 use App\Http\Controllers\SSLCommerzController;
+use App\Http\Controllers\OtpController;
 use App\Http\Controllers\Admin\AutomationHubController;
 use App\Http\Controllers\Admin\ServiceHealthController;
 use App\Http\Controllers\Admin\SystemStatusController;
@@ -47,6 +48,11 @@ Route::get('/checkout/success', [CheckoutController::class, 'success'])->name('c
 
 Route::get('/payment/{order}', [PaymentController::class, 'show'])->name('payment.show');
 Route::post('/payment/{order}', [PaymentController::class, 'process'])->name('payment.process');
+Route::post('/payment/{order}/manual', [PaymentController::class, 'manualPayment'])->name('payment.manual');
+
+// OTP Verification
+Route::post('/otp/send', [OtpController::class, 'send'])->name('otp.send');
+Route::post('/otp/verify', [OtpController::class, 'verify'])->name('otp.verify');
 
 // SSLCommerz Callbacks
 Route::post('/sslcommerz/success/{order}', [SSLCommerzController::class, 'success'])->name('sslcommerz.success');
