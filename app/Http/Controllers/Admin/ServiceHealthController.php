@@ -107,7 +107,7 @@ class ServiceHealthController extends Controller
         try {
             DB::connection()->getPdo();
             return 'healthy';
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return 'error';
         }
     }
@@ -117,7 +117,7 @@ class ServiceHealthController extends Controller
         try {
             Cache::store('redis')->put('health_check', true, 10);
             return Cache::store('redis')->get('health_check') ? 'healthy' : 'error';
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return 'warning';
         }
     }
@@ -133,7 +133,7 @@ class ServiceHealthController extends Controller
         try {
             $response = Http::timeout(2)->get('http://localhost:9090/-/healthy');
             return $response->successful() ? 'healthy' : 'error';
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return 'offline';
         }
     }
@@ -144,7 +144,7 @@ class ServiceHealthController extends Controller
             $url = Config::get('mautic.url', 'http://127.0.0.1:8090');
             $response = Http::timeout(3)->get($url);
             return $response->successful() ? 'healthy' : 'error';
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return 'offline';
         }
     }
@@ -155,7 +155,7 @@ class ServiceHealthController extends Controller
             $url = Config::get('erpnext.url', 'http://localhost:8000');
             $response = Http::timeout(3)->get($url);
             return $response->successful() ? 'healthy' : 'error';
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return 'offline';
         }
     }
@@ -172,7 +172,7 @@ class ServiceHealthController extends Controller
             $port = $provider === 'rasa' ? 5005 : 3000;
             $response = Http::timeout(2)->get("http://localhost:{$port}");
             return $response->successful() ? 'healthy' : 'error';
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return 'offline';
         }
     }
@@ -182,7 +182,7 @@ class ServiceHealthController extends Controller
         try {
             $response = Http::timeout(2)->get('http://localhost:8001/health');
             return $response->successful() ? 'healthy' : 'error';
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return 'offline';
         }
     }
@@ -201,7 +201,7 @@ class ServiceHealthController extends Controller
         try {
             $response = Http::timeout(2)->get('http://localhost:9090/api/v1/query?up');
             return ['status' => 'healthy', 'message' => 'Prometheus is running on port 9090'];
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return ['status' => 'offline', 'message' => 'Prometheus not reachable on port 9090', 'fix' => 'Run: docker-compose -f monitoring/docker-compose.monitoring.yml up -d'];
         }
     }
@@ -215,7 +215,7 @@ class ServiceHealthController extends Controller
                 return ['status' => 'healthy', 'message' => "Mautic is running at {$url}"];
             }
             return ['status' => 'error', 'message' => 'Mautic returned error status'];
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return ['status' => 'offline', 'message' => 'Mautic not reachable', 'fix' => 'Run: docker-compose -f mautic/docker-compose.mautic.yml up -d'];
         }
     }
@@ -229,7 +229,7 @@ class ServiceHealthController extends Controller
                 return ['status' => 'healthy', 'message' => "ERPNext is running at {$url}"];
             }
             return ['status' => 'error', 'message' => 'ERPNext returned error status'];
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return ['status' => 'offline', 'message' => 'ERPNext not reachable', 'fix' => 'Run: docker-compose -f erpnext/docker-compose.erpnext.yml up -d'];
         }
     }
@@ -252,7 +252,7 @@ class ServiceHealthController extends Controller
                 return ['status' => 'healthy', 'message' => "{$provider} is running on port {$port}"];
             }
             return ['status' => 'error', 'message' => "{$provider} returned error"];
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return ['status' => 'offline', 'message' => 'AI agent not reachable', 'fix' => "Run: docker-compose -f ai-agents/docker-compose.{$provider}.yml up -d"];
         }
     }
@@ -265,7 +265,7 @@ class ServiceHealthController extends Controller
                 return ['status' => 'healthy', 'message' => 'Recommendation engine is running on port 8001'];
             }
             return ['status' => 'error', 'message' => 'Recommendation engine returned error'];
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return ['status' => 'offline', 'message' => 'Recommendation engine not reachable', 'fix' => 'Run: docker-compose -f recommendation/docker-compose.recommendation.yml up -d'];
         }
     }
@@ -276,7 +276,7 @@ class ServiceHealthController extends Controller
             DB::connection()->getPdo();
             $tables = DB::select('SHOW TABLES');
             return ['status' => 'healthy', 'message' => 'Database connected with ' . count($tables) . ' tables'];
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return ['status' => 'error', 'message' => 'Database connection failed: ' . $e->getMessage()];
         }
     }
@@ -289,7 +289,7 @@ class ServiceHealthController extends Controller
             return $val === 'ok'
                 ? ['status' => 'healthy', 'message' => 'Redis cache is working']
                 : ['status' => 'error', 'message' => 'Redis read/write failed'];
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return ['status' => 'offline', 'message' => 'Redis not reachable', 'detail' => 'Cache will use file driver instead'];
         }
     }

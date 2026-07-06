@@ -69,7 +69,7 @@ class SystemStatusController extends Controller
                 'path' => Config::get('database.connections.mysql.database'),
                 'details' => count($tables) . ' tables',
             ];
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $services['database'] = [
                 'name' => 'MySQL Database',
                 'status' => 'error',
@@ -94,7 +94,7 @@ class SystemStatusController extends Controller
                 'path' => '/',
                 'details' => $ok ? 'Read/Write OK' : 'Read/Write failed',
             ];
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $services['redis'] = [
                 'name' => 'Redis Cache',
                 'status' => 'offline',
@@ -202,7 +202,7 @@ class SystemStatusController extends Controller
                 'path' => $path,
                 'details' => $response->successful() ? 'Responding' : 'Error: ' . $response->status(),
             ];
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return [
                 'name' => $name,
                 'status' => 'offline',
@@ -230,7 +230,7 @@ class SystemStatusController extends Controller
         try {
             $response = Http::timeout(3)->get($url);
             return $response->successful();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return false;
         }
     }
@@ -418,7 +418,7 @@ class SystemStatusController extends Controller
         try {
             DB::connection()->getPdo();
             return true;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return false;
         }
     }
@@ -428,7 +428,7 @@ class SystemStatusController extends Controller
         try {
             Cache::store('redis')->put('_test', 1, 5);
             return Cache::store('redis')->get('_test') === 1;
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return false;
         }
     }
