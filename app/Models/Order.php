@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 class Order extends Model
 {
-    protected $fillable = ['user_id', 'order_number', 'status', 'total', 'shipping_address', 'payment_method', 'payment_status', 'paid_at', 'transaction_id', 'notes'];
+    protected $fillable = ['user_id', 'order_number', 'status', 'total', 'shipping_address', 'shipping_phone', 'shipping_email', 'payment_method', 'payment_status', 'paid_at', 'transaction_id', 'notes'];
 
     protected $casts = ['paid_at' => 'datetime'];
 

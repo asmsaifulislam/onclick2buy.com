@@ -32,6 +32,8 @@ class CheckoutController extends Controller
     {
         $request->validate([
             'shipping_address' => 'required|string|min:10',
+            'shipping_phone' => 'required|string|max:20',
+            'shipping_email' => 'required|email|max:255',
             'payment_method' => 'required|string',
         ]);
         $cartItems = Cart::with('product')->where('session_id', session()->getId())->orWhere('user_id', Auth::id())->get();
@@ -46,6 +48,8 @@ class CheckoutController extends Controller
                 'status' => 'pending',
                 'total' => $total,
                 'shipping_address' => $request->shipping_address,
+                'shipping_phone' => $request->shipping_phone,
+                'shipping_email' => $request->shipping_email,
                 'payment_method' => $request->payment_method,
             ]);
             foreach ($cartItems as $item) {
