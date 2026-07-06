@@ -5,6 +5,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\Category;
 use App\Models\User;
+use App\Models\PageView;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -43,12 +44,18 @@ class AnalyticsController extends Controller
         $categoryLabels = $categoryRevenue->pluck('category_id')->map(fn($id) => Category::find($id)?->name ?? 'Uncategorized');
         $categoryValues = $categoryRevenue->pluck('total');
 
+        $pageViews = PageView::period($range['start'], $range['end'])->count();
+        $dailyViews = PageView::dailyViews(30);
+        $topPages = PageView::topPages(10);
+        $topReferrers = PageView::topReferrers(10);
+
         return view('admin.analytics.index', compact(
             'totalRevenue', 'totalOrders', 'avgOrderValue', 'totalProducts',
             'topProducts', 'categoryRevenue', 'stockSummary', 'topCustomers',
             'pendingOrders', 'processingOrders', 'range',
             'chartLabels', 'chartValues', 'chartCounts',
-            'categoryLabels', 'categoryValues'
+            'categoryLabels', 'categoryValues',
+            'pageViews', 'dailyViews', 'topPages', 'topReferrers'
         ));
     }
 }

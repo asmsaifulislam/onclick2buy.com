@@ -180,6 +180,23 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 Route::post('/api/ai/chat', [AiAgentController::class, 'chat'])->name('ai.chat');
 Route::post('/api/botframework/messages', [AiAgentController::class, 'botframeworkWebhook'])->name('ai.botframework.webhook');
 
+// Self-hosted Analytics Tracking
+use App\Models\PageView;
+Route::post('/api/track/page-view', function (\Illuminate\Http\Request $request) {
+    try {
+        PageView::create([
+            'url' => $request->input('url'),
+            'path' => $request->input('path'),
+            'referrer' => $request->input('referrer'),
+            'user_agent' => $request->userAgent(),
+            'ip' => $request->ip(),
+        ]);
+    } catch (\Throwable $e) {
+        // silently fail
+    }
+    return response()->noContent();
+})->middleware('throttle:60,1');
+
 // AI Agent Admin Routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/ai-agents', [AiAgentController::class, 'index'])->name('ai-agents.index');

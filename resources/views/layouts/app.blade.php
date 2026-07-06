@@ -20,12 +20,16 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', $storeName)</title>
     @if(config('app.google_analytics_id'))
-        <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('app.google_analytics_id') }}"></script>
         <script>
-            window.dataLayer = window.dataLayer || [];
-            function gtag(){dataLayer.push(arguments);}
-            gtag('js', new Date());
-            gtag('config', '{{ config('app.google_analytics_id') }}');
+            document.addEventListener('DOMContentLoaded', function() {
+                if (navigator.sendBeacon) {
+                    navigator.sendBeacon('/api/track/page-view', JSON.stringify({
+                        url: window.location.href,
+                        path: window.location.pathname,
+                        referrer: document.referrer || '',
+                    }));
+                }
+            });
         </script>
     @endif
     @if(config('mautic.tracking.enabled') && config('mautic.tracking.pixel_id'))
