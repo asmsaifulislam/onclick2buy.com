@@ -274,7 +274,10 @@ class ServiceHealthController extends Controller
     {
         try {
             DB::connection()->getPdo();
-            $tables = DB::select('SHOW TABLES');
+            $driver = DB::connection()->getDriverName();
+            $tables = $driver === 'sqlite'
+                ? DB::select("SELECT name FROM sqlite_master WHERE type='table'")
+                : DB::select('SHOW TABLES');
             return ['status' => 'healthy', 'message' => 'Database connected with ' . count($tables) . ' tables'];
         } catch (\Throwable $e) {
             return ['status' => 'error', 'message' => 'Database connection failed: ' . $e->getMessage()];

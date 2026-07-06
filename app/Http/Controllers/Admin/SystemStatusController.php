@@ -58,26 +58,30 @@ class SystemStatusController extends Controller
 
         // Database
         try {
+            $driver = DB::connection()->getDriverName();
             DB::connection()->getPdo();
-            $tables = DB::select('SHOW TABLES');
+            $tables = $driver === 'sqlite'
+                ? DB::select("SELECT name FROM sqlite_master WHERE type='table'")
+                : DB::select('SHOW TABLES');
             $services['database'] = [
-                'name' => 'MySQL Database',
+                'name' => ucfirst($driver) . ' Database',
                 'status' => 'healthy',
                 'type' => 'Core',
-                'ip' => Config::get('database.connections.mysql.host', '127.0.0.1'),
-                'port' => Config::get('database.connections.mysql.port', '3306'),
-                'path' => Config::get('database.connections.mysql.database'),
+                'ip' => Config::get("database.connections.{$driver}.host", '127.0.0.1'),
+                'port' => Config::get("database.connections.{$driver}.port", ''),
+                'path' => Config::get("database.connections.{$driver}.database", $driver === 'sqlite' ? database_path('database.sqlite') : ''),
                 'details' => count($tables) . ' tables',
             ];
         } catch (\Throwable $e) {
+            $default = Config::get('database.default', 'sqlite');
             $services['database'] = [
-                'name' => 'MySQL Database',
+                'name' => 'Database (' . $default . ')',
                 'status' => 'error',
                 'type' => 'Core',
-                'ip' => Config::get('database.connections.mysql.host', '127.0.0.1'),
-                'port' => Config::get('database.connections.mysql.port', '3306'),
-                'path' => Config::get('database.connections.mysql.database'),
-                'details' => 'Connection failed',
+                'ip' => Config::get("database.connections.{$default}.host", '127.0.0.1'),
+                'port' => Config::get("database.connections.{$default}.port", ''),
+                'path' => Config::get("database.connections.{$default}.database", $default === 'sqlite' ? database_path('database.sqlite') : ''),
+                'details' => $e->getMessage(),
             ];
         }
 
