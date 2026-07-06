@@ -38,7 +38,7 @@ class CheckoutController extends Controller
         if ($cartItems->isEmpty()) {
             return redirect()->route('cart.index')->with('error', 'Cart is empty!');
         }
-        DB::transaction(function () use ($request, $cartItems) {
+        DB::transaction(function () use ($request, $cartItems, &$order) {
             $total = $cartItems->sum(fn($item) => ($item->product->sale_price ?: $item->product->price) * $item->quantity);
             $order = Order::create([
                 'user_id' => Auth::id() ?? 1,
