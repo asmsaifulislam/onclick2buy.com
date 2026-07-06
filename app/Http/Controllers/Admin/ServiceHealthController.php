@@ -5,7 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ServiceHealthController extends Controller
@@ -103,7 +105,7 @@ class ServiceHealthController extends Controller
     private function checkDatabase()
     {
         try {
-            \DB::connection()->getPdo();
+            DB::connection()->getPdo();
             return 'healthy';
         } catch (\Exception $e) {
             return 'error';
@@ -113,8 +115,8 @@ class ServiceHealthController extends Controller
     private function checkRedis()
     {
         try {
-            \Cache::store('redis')->put('health_check', true, 10);
-            return \Cache::store('redis')->get('health_check') ? 'healthy' : 'error';
+            Cache::store('redis')->put('health_check', true, 10);
+            return Cache::store('redis')->get('health_check') ? 'healthy' : 'error';
         } catch (\Exception $e) {
             return 'warning';
         }
@@ -271,8 +273,8 @@ class ServiceHealthController extends Controller
     private function testDatabase()
     {
         try {
-            \DB::connection()->getPdo();
-            $tables = \DB::select('SHOW TABLES');
+            DB::connection()->getPdo();
+            $tables = DB::select('SHOW TABLES');
             return ['status' => 'healthy', 'message' => 'Database connected with ' . count($tables) . ' tables'];
         } catch (\Exception $e) {
             return ['status' => 'error', 'message' => 'Database connection failed: ' . $e->getMessage()];
@@ -282,8 +284,8 @@ class ServiceHealthController extends Controller
     private function testRedis()
     {
         try {
-            \Cache::store('redis')->put('health_test', 'ok', 10);
-            $val = \Cache::store('redis')->get('health_test');
+            Cache::store('redis')->put('health_test', 'ok', 10);
+            $val = Cache::store('redis')->get('health_test');
             return $val === 'ok'
                 ? ['status' => 'healthy', 'message' => 'Redis cache is working']
                 : ['status' => 'error', 'message' => 'Redis read/write failed'];

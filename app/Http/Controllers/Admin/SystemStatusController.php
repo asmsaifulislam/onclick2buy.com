@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\File;
 
 class SystemStatusController extends Controller
@@ -57,8 +58,8 @@ class SystemStatusController extends Controller
 
         // Database
         try {
-            \DB::connection()->getPdo();
-            $tables = \DB::select('SHOW TABLES');
+            DB::connection()->getPdo();
+            $tables = DB::select('SHOW TABLES');
             $services['database'] = [
                 'name' => 'MySQL Database',
                 'status' => 'healthy',
@@ -82,8 +83,8 @@ class SystemStatusController extends Controller
 
         // Redis
         try {
-            \Cache::store('redis')->put('_health', 1, 10);
-            $ok = \Cache::store('redis')->get('_health') === 1;
+            Cache::store('redis')->put('_health', 1, 10);
+            $ok = Cache::store('redis')->get('_health') === 1;
             $services['redis'] = [
                 'name' => 'Redis Cache',
                 'status' => $ok ? 'healthy' : 'error',
@@ -415,7 +416,7 @@ class SystemStatusController extends Controller
     private function testDbConnection()
     {
         try {
-            \DB::connection()->getPdo();
+            DB::connection()->getPdo();
             return true;
         } catch (\Exception $e) {
             return false;
@@ -425,8 +426,8 @@ class SystemStatusController extends Controller
     private function testRedisConnection()
     {
         try {
-            \Cache::store('redis')->put('_test', 1, 5);
-            return \Cache::store('redis')->get('_test') === 1;
+            Cache::store('redis')->put('_test', 1, 5);
+            return Cache::store('redis')->get('_test') === 1;
         } catch (\Exception $e) {
             return false;
         }
