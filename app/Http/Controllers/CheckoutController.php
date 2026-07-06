@@ -3,6 +3,7 @@ namespace App\Http\Controllers;
 use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderItem;
+use App\Models\PaymentMethod;
 use App\Services\MauticService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -24,7 +25,8 @@ class CheckoutController extends Controller
             return redirect()->route('cart.index')->with('error', 'Your cart is empty!');
         }
         $total = $cartItems->sum(fn($item) => ($item->product->sale_price ?: $item->product->price) * $item->quantity);
-        return view('checkout.index', compact('cartItems', 'total'));
+        $paymentMethods = PaymentMethod::active()->get();
+        return view('checkout.index', compact('cartItems', 'total', 'paymentMethods'));
     }
     public function store(Request $request)
     {
@@ -75,6 +77,11 @@ class CheckoutController extends Controller
                 })->toArray(),
             ]);
         });
+
+        if (in_array($request->payment_method, ['bkash', 'nagad', 'rocket', 'card'])) {
+            return redirect()->route('payment.show', $order);
+        }
+
         return redirect()->route('checkout.success')->with('order_success', true);
     }
     public function success()

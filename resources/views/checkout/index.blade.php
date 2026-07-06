@@ -16,20 +16,26 @@
                     <div class="mb-6">
                         <label class="block mb-2 font-medium text-gray-700">Payment Method</label>
                         <div class="grid grid-cols-2 gap-3">
-                            <label class="border border-gray-200 rounded-xl p-4 cursor-pointer hover:border-indigo-400 transition-all has-checked:border-indigo-600 has-checked:bg-indigo-50 has-checked:ring-2 has-checked:ring-indigo-200">
-                                <input type="radio" name="payment_method" value="cash_on_delivery" class="hidden" {{ old('payment_method') == 'cash_on_delivery' ? 'checked' : '' }} required>
-                                <div class="text-center">
-                                    <svg class="w-8 h-8 mx-auto mb-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
-                                    <span class="block font-medium text-sm">Cash on Delivery</span>
-                                </div>
-                            </label>
-                            <label class="border border-gray-200 rounded-xl p-4 cursor-pointer hover:border-indigo-400 transition-all has-checked:border-indigo-600 has-checked:bg-indigo-50 has-checked:ring-2 has-checked:ring-indigo-200">
-                                <input type="radio" name="payment_method" value="bank_transfer" class="hidden" {{ old('payment_method') == 'bank_transfer' ? 'checked' : '' }}>
-                                <div class="text-center">
-                                    <svg class="w-8 h-8 mx-auto mb-2 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-                                    <span class="block font-medium text-sm">Bank Transfer</span>
-                                </div>
-                            </label>
+                            @foreach($paymentMethods as $method)
+                                <label class="border border-gray-200 rounded-xl p-4 cursor-pointer hover:border-indigo-400 transition-all has-checked:border-indigo-600 has-checked:bg-indigo-50 has-checked:ring-2 has-checked:ring-indigo-200">
+                                    <input type="radio" name="payment_method" value="{{ $method->code }}" class="hidden" {{ old('payment_method') == $method->code ? 'checked' : '' }} required>
+                                    <div class="text-center">
+                                        <span class="block font-bold text-lg mb-1">
+                                            @switch($method->code)
+                                                @case('bkash') &#x09AC;&#x0995;&#x09BE;&#x09B6; @break
+                                                @case('nagad') &#x09A8;&#x0997;&#x09A6; @break
+                                                @case('rocket') &#x09B0;&#x0995;&#x09C7;&#x099F; @break
+                                                @case('cod') &#x09A1;&#x09C7;&#x09B2;&#x09BF;&#x09AD;&#x09BE;&#x09B0;&#x09BF;&#x09A4;&#x09C7; @break
+                                                @default {{ $method->name }}
+                                            @endswitch
+                                        </span>
+                                        <span class="block font-medium text-sm text-gray-600">{{ $method->name }}</span>
+                                        @if($method->description)
+                                            <span class="block text-xs text-gray-400 mt-1">{{ $method->description }}</span>
+                                        @endif
+                                    </div>
+                                </label>
+                            @endforeach
                         </div>
                         @error('payment_method')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
                     </div>

@@ -233,4 +233,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/backup-restore/download/{filename}', [BackupRestoreController::class, 'download'])->name('backup.download');
     Route::post('/backup-restore/restore', [BackupRestoreController::class, 'restore'])->name('backup.restore');
     Route::delete('/backup-restore/delete/{filename}', [BackupRestoreController::class, 'destroy'])->name('backup.delete');
+
+    // Payment Methods
+    Route::get('/payment-methods', [App\Http\Controllers\Admin\PaymentMethodController::class, 'index'])->name('payment-methods.index');
+    Route::get('/payment-methods/{paymentMethod}/edit', [App\Http\Controllers\Admin\PaymentMethodController::class, 'edit'])->name('payment-methods.edit');
+    Route::put('/payment-methods/{paymentMethod}', [App\Http\Controllers\Admin\PaymentMethodController::class, 'update'])->name('payment-methods.update');
+
+    // Payments
+    Route::get('/payments', [App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments.index');
+    Route::get('/payments/{payment}', [App\Http\Controllers\Admin\PaymentController::class, 'show'])->name('payments.show');
+    Route::post('/payments/{payment}/verify', [App\Http\Controllers\Admin\PaymentController::class, 'verify'])->name('payments.verify');
+    Route::post('/payments/{payment}/reject', [App\Http\Controllers\Admin\PaymentController::class, 'reject'])->name('payments.reject');
 });
