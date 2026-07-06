@@ -8,7 +8,8 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'base_url' => env('MAUTIC_BASE_URL', 'http://localhost:8090'),
+    'url' => env('MAUTIC_URL', 'http://127.0.0.1:8090'),
+    'base_url' => env('MAUTIC_BASE_URL', 'http://144.225.8.129:8090'),
 
     'api' => [
         'username' => env('MAUTIC_API_USERNAME', ''),

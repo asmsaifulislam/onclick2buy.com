@@ -42,14 +42,15 @@ class AutomationHubController extends Controller
         ];
 
         // Mautic Marketing
+        $mauticRunning = $this->checkPortOpen('127.0.0.1', 8090);
         $services['mautic'] = [
             'name' => 'Marketing Automation',
             'icon' => 'bolt',
             'color' => 'purple',
-            'status' => $this->checkService('mautic', 'mautic', 8090),
+            'status' => $mauticRunning ? 'active' : 'offline',
             'description' => 'Email campaigns, lead scoring, cart abandonment recovery.',
             'url' => route('admin.mautic.index'),
-            'config_url' => 'http://127.0.0.1:8090',
+            'config_url' => Config::get('mautic.base_url', 'http://144.225.8.129:8090'),
         ];
 
         // ERPNext
@@ -115,8 +116,18 @@ class AutomationHubController extends Controller
         try {
             $response = Http::timeout(2)->get("http://localhost:{$port}");
             return $response->successful() ? 'active' : 'error';
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return 'offline';
         }
+    }
+
+    private function checkPortOpen($host, $port)
+    {
+        $fp = @fsockopen($host, $port, $errno, $errstr, 2);
+        if ($fp) {
+            fclose($fp);
+            return true;
+        }
+        return false;
     }
 }
