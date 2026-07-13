@@ -76,7 +76,7 @@
                                     <p class="text-xs text-gray-500">Qty: {{ $item->quantity }}</p>
                                 </div>
                             </div>
-                            <span class="font-semibold text-gray-800">${{ number_format($price * $item->quantity, 2) }}</span>
+                            <span class="font-semibold text-gray-800">৳{{ number_format($price * $item->quantity, 2) }}</span>
                         </div>
                     @endforeach
                 </div>

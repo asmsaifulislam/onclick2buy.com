@@ -37,11 +37,11 @@
             </div>
             <div class="flex items-baseline gap-3">
                 @if($product->sale_price)
-                    <span class="text-4xl font-extrabold text-red-600">${{ number_format($product->sale_price, 2) }}</span>
-                    <span class="text-xl text-gray-400 line-through">${{ number_format($product->price, 2) }}</span>
-                    <span class="bg-red-100 text-red-700 text-sm font-bold px-3 py-1 rounded-full">Save ${{ number_format($product->price - $product->sale_price, 2) }}</span>
+                    <span class="text-4xl font-extrabold text-red-600">৳{{ number_format($product->sale_price, 2) }}</span>
+                    <span class="text-xl text-gray-400 line-through">৳{{ number_format($product->price, 2) }}</span>
+                    <span class="bg-red-100 text-red-700 text-sm font-bold px-3 py-1 rounded-full">Save ৳{{ number_format($product->price - $product->sale_price, 2) }}</span>
                 @else
-                    <span class="text-4xl font-extrabold text-gray-900">${{ number_format($product->price, 2) }}</span>
+                    <span class="text-4xl font-extrabold text-gray-900">৳{{ number_format($product->price, 2) }}</span>
                 @endif
             </div>
             <div class="prose prose-gray max-w-none">
@@ -73,7 +73,7 @@
             @endif
             <div class="border-t pt-5 flex items-center gap-4 text-sm text-gray-500">
                 <div class="flex items-center gap-1"><svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg> Secure checkout</div>
-                <div class="flex items-center gap-1"><svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/><path d="M3 4h1.5l2.5 7h8.5l2-6H7.5L6 3H3v1z"/></svg> Free shipping over $50</div>
+                <div class="flex items-center gap-1"><svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/><path d="M3 4h1.5l2.5 7h8.5l2-6H7.5L6 3H3v1z"/></svg> Free shipping over ৳500</div>
                 <div class="flex items-center gap-1"><svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg> 30-day returns</div>
             </div>
         </div>
@@ -175,7 +175,7 @@
                         </a>
                         <div class="p-3">
                             <a href="{{ route('products.show', $rel) }}" class="font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors">{{ $rel->name }}</a>
-                            <p class="text-lg font-bold mt-1">${{ number_format($rel->sale_price ?: $rel->price, 2) }}</p>
+                            <p class="text-lg font-bold mt-1">৳{{ number_format($rel->sale_price ?: $rel->price, 2) }}</p>
                         </div>
                     </div>
                 @endforeach

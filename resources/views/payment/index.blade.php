@@ -259,7 +259,7 @@
                     @foreach($order->items as $item)
                         <div class="flex justify-between text-sm">
                             <span class="text-gray-600 truncate max-w-[70%]">{{ $item->product_name }} &times; {{ $item->quantity }}</span>
-                            <span class="font-medium text-gray-800">${{ number_format($item->price * $item->quantity, 2) }}</span>
+                            <span class="font-medium text-gray-800">৳{{ number_format($item->price * $item->quantity, 2) }}</span>
                         </div>
                     @endforeach
                 </div>

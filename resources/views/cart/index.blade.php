@@ -26,7 +26,7 @@
                         </div>
                         <div class="min-w-0 flex-1">
                             <h3 class="font-semibold text-gray-800 truncate">{{ $item->product->name }}</h3>
-                            <p class="text-sm text-gray-500">${{ number_format($price, 2) }} each</p>
+                            <p class="text-sm text-gray-500">৳{{ number_format($price, 2) }} each</p>
                         </div>
                     </div>
                     <div class="flex items-center gap-3 sm:gap-2 flex-wrap sm:flex-nowrap">

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "builtin_text-eYtVq",
+    "formData": {
+      "text": "What product are you looking for? Please describe what you need."
+    },
+    "createdBy": "admin",
+    "createdOn": "2026-07-06T00:00:00Z"
+  },
+  {
+    "id": "builtin_text-zGhRg",
+    "formData": {
+      "text": "Please provide your order ID (e.g., ORD-12345678) and I will check the status for you."
+    },
+    "createdBy": "admin",
+    "createdOn": "2026-07-06T00:00:00Z"
+  },
+  {
+    "id": "builtin_text-mNoPl",
+    "formData": {
+      "text": "I can help you with:\n- Product search\n- Order tracking\n- Shipping info\n- Return policy\n- Payment methods\n- Human support\n\nWhat would you like to know?"
+    },
+    "createdBy": "admin",
+    "createdOn": "2026-07-06T00:00:00Z"
+  }
+]

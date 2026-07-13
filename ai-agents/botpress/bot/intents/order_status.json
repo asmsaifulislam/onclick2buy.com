@@ -1,0 +1,20 @@
+{
+  "name": "order_status",
+  "contexts": [],
+  "slots": [],
+  "utterances": [
+    "Where is my order?",
+    "Check order status",
+    "Track my package",
+    "When will my order arrive?",
+    "Order tracking",
+    "My order number is",
+    "What's the status of order",
+    "I want to track my order",
+    "Has my order been shipped?",
+    "When is delivery?",
+    "order status",
+    "track order",
+    "where is package"
+  ]
+}

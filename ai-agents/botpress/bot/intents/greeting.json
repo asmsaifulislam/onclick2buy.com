@@ -1,0 +1,17 @@
+{
+  "name": "greeting",
+  "contexts": [],
+  "slots": [],
+  "utterances": [
+    "Hello",
+    "Hi",
+    "Hey",
+    "Good morning",
+    "Good evening",
+    "Howdy",
+    "Greetings",
+    "What's up",
+    "hi there",
+    "hello there"
+  ]
+}

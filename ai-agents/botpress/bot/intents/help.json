@@ -1,0 +1,17 @@
+{
+  "name": "help",
+  "contexts": [],
+  "slots": [],
+  "utterances": [
+    "I need help",
+    "Can you help me?",
+    "What can you do?",
+    "What are your services?",
+    "Help me with something",
+    "I have a question",
+    "Support",
+    "Customer service",
+    "Help",
+    "assist"
+  ]
+}

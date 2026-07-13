@@ -40,10 +40,10 @@
                     <a href="{{ route('products.show', $product) }}" class="font-semibold text-gray-800 group-hover:text-indigo-600 transition-colors line-clamp-1">{{ $product->name }}</a>
                     <div class="mt-2 flex items-center gap-2">
                         @if($product->sale_price)
-                            <span class="text-xl font-bold text-red-600">${{ number_format($product->sale_price, 2) }}</span>
-                            <span class="text-sm text-gray-400 line-through">${{ number_format($product->price, 2) }}</span>
+                            <span class="text-xl font-bold text-red-600">৳{{ number_format($product->sale_price, 2) }}</span>
+                            <span class="text-sm text-gray-400 line-through">৳{{ number_format($product->price, 2) }}</span>
                         @else
-                            <span class="text-xl font-bold text-gray-900">${{ number_format($product->price, 2) }}</span>
+                            <span class="text-xl font-bold text-gray-900">৳{{ number_format($product->price, 2) }}</span>
                         @endif
                     </div>
                     @if($product->stock > 0)

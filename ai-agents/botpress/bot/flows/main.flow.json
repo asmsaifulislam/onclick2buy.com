@@ -1,0 +1,128 @@
+{
+  "id": "main",
+  "version": "0.0.1",
+  "startNode": "entry",
+  "skill": "adv3",
+  "name": "Main Flow",
+  "nodes": [
+    {
+      "id": "entry",
+      "name": "entry",
+      "next": [
+        {
+          "condition": "true",
+          "node": "welcome"
+        }
+      ],
+      "type": "standard",
+      "flags": {}
+    },
+    {
+      "id": "welcome",
+      "name": "welcome",
+      "next": [
+        {
+          "condition": "true",
+          "node": "wait-user"
+        }
+      ],
+      "onEnter": [
+        {
+          "type": "skill",
+          "skillId": "builtin-choice-skill",
+          "name": "choice",
+          "args": {
+            "choices": [
+              {
+                "payload": "product_search",
+                "text": "Find Product"
+              },
+              {
+                "payload": "order_status",
+                "text": "Track Order"
+              },
+              {
+                "payload": "help",
+                "text": "Help"
+              }
+            ]
+          }
+        }
+      ],
+      "type": "standard",
+      "flags": {}
+    },
+    {
+      "id": "wait-user",
+      "name": "wait-user",
+      "next": [
+        {
+          "condition": "event.type == 'quick_reply' && event.payload == 'product_search'",
+          "node": "product-search"
+        },
+        {
+          "condition": "event.type == 'quick_reply' && event.payload == 'order_status'",
+          "node": "order-status"
+        },
+        {
+          "condition": "event.type == 'quick_reply' && event.payload == 'help'",
+          "node": "help"
+        },
+        {
+          "condition": "true",
+          "node": "welcome"
+        }
+      ],
+      "onEnter": [],
+      "type": "standard",
+      "flags": {
+        "idle": true
+      }
+    },
+    {
+      "id": "product-search",
+      "name": "product-search",
+      "next": [
+        {
+          "condition": "true",
+          "node": "wait-user"
+        }
+      ],
+      "onEnter": [
+        "Say #!builtin_text-eYtVq:What product are you looking for? Please describe what you need."
+      ],
+      "type": "standard",
+      "flags": {}
+    },
+    {
+      "id": "order-status",
+      "name": "order-status",
+      "next": [
+        {
+          "condition": "true",
+          "node": "wait-user"
+        }
+      ],
+      "onEnter": [
+        "Say #!builtin_text-zGhRg:Please provide your order ID (e.g., ORD-12345678) and I will check the status for you."
+      ],
+      "type": "standard",
+      "flags": {}
+    },
+    {
+      "id": "help",
+      "name": "help",
+      "next": [
+        {
+          "condition": "true",
+          "node": "wait-user"
+        }
+      ],
+      "onEnter": [
+        "Say #!builtin_text-mNoPl:I can help you with: Product search, Order tracking, Shipping info, Return policy, Payment methods, Human support. What would you like to know?"
+      ],
+      "type": "standard",
+      "flags": {}
+    }
+  ]
+}

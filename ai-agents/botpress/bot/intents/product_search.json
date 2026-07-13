@@ -1,0 +1,22 @@
+{
+  "name": "product_search",
+  "contexts": [],
+  "slots": [],
+  "utterances": [
+    "I want to buy a product",
+    "Do you have laptops?",
+    "Looking for a phone",
+    "I need a new shirt",
+    "Search for shoes",
+    "Find me a camera",
+    "What products do you sell?",
+    "I want to see your products",
+    "Show me what you have",
+    "I'm looking for something",
+    "product search",
+    "find product",
+    "buy something",
+    "shop",
+    "browse products"
+  ]
+}
