@@ -204,6 +204,7 @@
 .sidebar-link {
     transition: all 0.3s ease;
     position: relative;
+    white-space: nowrap;
 }
 .sidebar-link:hover {
     @apply bg-indigo-600;
@@ -212,6 +213,19 @@
 .sidebar-link.active {
     @apply bg-indigo-600;
     box-shadow: inset 4px 0 0 #c7d2fe;
+}
+.group:hover .sidebar-link {
+    opacity: 1;
+}
+.group:not(:hover) .sidebar-link {
+    opacity: 0.9;
+}
+.group:not(:hover) .sidebar-link.active {
+    opacity: 1;
+    box-shadow: inset 4px 0 0 #c7d2fe;
+}
+.group:not(:hover) .sidebar-link:hover {
+    opacity: 1;
 }
 
 .scroll-fade-in {
