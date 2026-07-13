@@ -8,8 +8,8 @@
 </head>
 <body class="antialiased bg-gray-50">
     <div class="flex min-h-screen overflow-hidden">
-        <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-20 hidden md:hidden"></div>
-        <aside id="sidebar" class="fixed md:static inset-y-0 left-0 z-30 w-64 bg-gray-900 text-white flex-shrink-0 flex-col h-screen transform -translate-x-full md:translate-x-0 md:flex transition-transform duration-300 ease-in-out">
+        <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-20 hidden"></div>
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-64 bg-gray-900 text-white flex-shrink-0 flex-col h-screen transform -translate-x-full transition-transform duration-300 ease-in-out">
             <div class="p-5 border-b border-gray-800">
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-1.5">
                     <svg class="w-5 h-5 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
@@ -152,15 +152,15 @@
         </aside>
 
         <div class="flex-1 flex flex-col overflow-hidden">
-            <header class="bg-white shadow-sm border-b border-gray-200 px-4 md:px-6 py-4 flex items-center justify-between md:justify-end">
-                <div class="md:hidden flex items-center gap-2">
-                    <button onclick="toggleSidebar()" class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+            <header class="bg-white shadow-sm border-b border-gray-200 px-4 md:px-6 py-4 flex items-center justify-between gap-4">
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleSidebar()" class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors" title="Toggle sidebar">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v14M5 12h14"/></svg>
                     </button>
                     <span class="flex items-center gap-1 text-sm font-bold text-gray-800 tracking-tight">OnClick<span class="text-indigo-600">2</span>Buy</span>
                 </div>
                 <div class="flex items-center gap-3">
-                    <span class="text-sm text-gray-500">Welcome, {{ auth()->user()->name }}</span>
+                    <span class="text-sm text-gray-500 hidden sm:inline">Welcome, {{ auth()->user()->name }}</span>
                     <div class="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold shadow-md">{{ substr(auth()->user()->name, 0, 1) }}</div>
                 </div>
             </header>
@@ -185,9 +185,26 @@
     function toggleSidebar() {
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebar-overlay');
-        sidebar.classList.toggle('-translate-x-full');
-        overlay.classList.toggle('hidden');
+        const isOpen = !sidebar.classList.contains('-translate-x-full');
+        if (isOpen) {
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        } else {
+            sidebar.classList.remove('-translate-x-full');
+            if (window.innerWidth < 768) {
+                overlay.classList.remove('hidden');
+            }
+        }
     }
+    window.addEventListener('resize', function() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        if (window.innerWidth >= 768) {
+            overlay.classList.add('hidden');
+        } else if (!sidebar.classList.contains('-translate-x-full')) {
+            overlay.classList.remove('hidden');
+        }
+    });
     </script>
 </body>
 </html>
