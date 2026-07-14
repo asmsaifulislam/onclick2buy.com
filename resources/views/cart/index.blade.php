@@ -9,6 +9,20 @@
             <a href="{{ route('products.index') }}" class="btn-primary inline-flex items-center gap-2">Start Shopping</a>
         </div>
     @else
+        <div class="bg-white rounded-2xl shadow-md p-4 mb-6 flex flex-col sm:flex-row items-center gap-3 animate-fade-in-up">
+            <form action="{{ route('cart.coupon') }}" method="POST" class="flex items-center gap-2 w-full sm:w-auto">
+                @csrf
+                <input type="text" name="code" value="{{ old('code', session('coupon_code') ?? '') }}" placeholder="Enter coupon code" class="input-field flex-1 sm:w-56 uppercase" style="text-transform:uppercase">
+                <button type="submit" class="btn-primary py-2.5 px-5 text-sm">Apply</button>
+            </form>
+            @if(session('coupon_code'))
+                <form action="{{ route('cart.coupon.remove') }}" method="POST" class="flex items-center gap-2">
+                    @csrf @method('DELETE')
+                    <span class="text-sm text-green-600 font-medium">Coupon <span class="font-mono">{{ session('coupon_code') }}</span> applied</span>
+                    <button type="submit" class="text-sm text-red-500 hover:text-red-700 font-medium">Remove</button>
+                </form>
+            @endif
+        </div>
         @php $total = 0; @endphp
         <div class="bg-white rounded-2xl shadow-md overflow-hidden animate-fade-in-up">
             @foreach($cartItems as $item)

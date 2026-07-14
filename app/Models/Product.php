@@ -31,6 +31,37 @@ class Product extends Model
     {
         return $this->hasMany(Wishlist::class);
     }
+    public function productVariants(): HasMany
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
+    public function matchVariant(array $attrs)
+    {
+        if (empty($attrs)) {
+            return null;
+        }
+        foreach ($this->productVariants as $variant) {
+            $va = $variant->attributes ?? [];
+            $match = true;
+            foreach ($attrs as $k => $v) {
+                if (!isset($va[$k]) || (string) $va[$k] !== (string) $v) {
+                    $match = false;
+                    break;
+                }
+            }
+            if ($match) {
+                return $variant;
+            }
+        }
+        return null;
+    }
+    public function priceForVariant(?ProductVariant $variant): float
+    {
+        if ($variant && $variant->price_override) {
+            return (float) $variant->price_override;
+        }
+        return (float) ($this->sale_price ?: $this->price);
+    }
     public function isWishlisted(): bool
     {
         if (!auth()->check()) {

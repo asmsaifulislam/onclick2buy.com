@@ -16,6 +16,9 @@ use App\Http\Controllers\Admin\BulkUploadController;
 use App\Http\Controllers\Admin\BiController;
 use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\CouponController;
+use App\Http\Controllers\Admin\ShippingMethodController;
+use App\Http\Controllers\Admin\TaxRateController;
 use App\Http\Controllers\UserOrderController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\ChatController;
@@ -42,6 +45,8 @@ Route::get('/cart', [CartController::class, 'index'])->name('cart.index');
 Route::post('/cart/add/{product}', [CartController::class, 'add'])->name('cart.add');
 Route::patch('/cart/{cart}', [CartController::class, 'update'])->name('cart.update');
 Route::delete('/cart/{cart}', [CartController::class, 'remove'])->name('cart.remove');
+Route::post('/cart/coupon', [CartController::class, 'applyCoupon'])->name('cart.coupon');
+Route::delete('/cart/coupon', [CartController::class, 'removeCoupon'])->name('cart.coupon.remove');
 
 Route::get('/checkout', [CheckoutController::class, 'index'])->name('checkout.index');
 Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
@@ -107,6 +112,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::put('/settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::resource('coupons', CouponController::class)->except(['show']);
+    Route::resource('shipping', ShippingMethodController::class)->except(['show']);
+    Route::resource('tax', TaxRateController::class)->except(['show']);
 
     // Chat routes (admin)
     Route::get('/chat', [AdminChatController::class, 'index'])->name('chat.index');

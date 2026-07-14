@@ -54,7 +54,8 @@ class ProductController extends Controller
             }
             $data['images'] = $paths;
         }
-        Product::create($data);
+        $product = Product::create($data);
+        $this->syncVariants($request, $product);
         return redirect()->route('admin.products.index')->with('success', 'Product created!');
     }
     public function edit(Product $product)
@@ -93,6 +94,7 @@ class ProductController extends Controller
             $data['images'] = $paths;
         }
         $product->update($data);
+        $this->syncVariants($request, $product);
         return redirect()->route('admin.products.index')->with('success', 'Product updated!');
     }
     public function destroy(Product $product)
@@ -120,5 +122,39 @@ class ProductController extends Controller
             $variants['material'] = array_filter(array_map('trim', explode(',', $request->variant_materials)));
         }
         return $variants ?: null;
+    }
+
+    private function syncVariants(Request $request, Product $product): void
+    {
+        $rows = $request->input('variants', []);
+        $data = [];
+        foreach ((array) $rows as $row) {
+            if (!is_array($row)) {
+                continue;
+            }
+            $attrs = [];
+            foreach (['size', 'color', 'material'] as $k) {
+                if (!empty($row[$k])) {
+                    $attrs[$k] = $row[$k];
+                }
+            }
+            if (empty($attrs) && empty($row['price_override']) && empty($row['stock'])) {
+                continue;
+            }
+            $data[] = [
+                'product_id' => $product->id,
+                'attributes' => $attrs ?: null,
+                'sku' => $row['sku'] ?? null,
+                'price_override' => ($row['price_override'] ?? '') !== '' ? $row['price_override'] : null,
+                'stock' => (int) ($row['stock'] ?? 0),
+                'is_active' => true,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }
+        $product->productVariants()->delete();
+        if ($data) {
+            $product->productVariants()->insert($data);
+        }
     }
 }

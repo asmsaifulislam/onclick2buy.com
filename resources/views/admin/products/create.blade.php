@@ -70,6 +70,12 @@
                 </div>
             </div>
         </div>
+        <div class="mb-4 p-4 bg-emerald-50/50 rounded-xl border border-emerald-100">
+            <h3 class="font-semibold text-gray-800 mb-1">Variant Combinations (price &amp; stock)</h3>
+            <p class="text-xs text-gray-500 mb-3">Optional. Add a row per combination to set its own price and stock. Leave blank to use the product default.</p>
+            <div id="variantRows"></div>
+            <button type="button" onclick="addVariantRow()" class="mt-1 text-sm font-medium text-emerald-700 hover:text-emerald-900">+ Add Combination</button>
+        </div>
         <div class="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
             <h3 class="font-semibold text-gray-800 mb-3">SEO Metadata</h3>
             <div class="space-y-3">
@@ -106,5 +112,26 @@
             <a href="{{ route('admin.products.index') }}" class="btn-outline text-sm">Cancel</a>
         </div>
     </form>
-</div>
+    </div>
+
+    <script>
+        let vIdx = 0;
+        function addVariantRow(prefill) {
+            prefill = prefill || {};
+            const i = vIdx++;
+            const wrap = document.getElementById('variantRows');
+            const row = document.createElement('div');
+            row.className = 'grid grid-cols-2 md:grid-cols-7 gap-2 items-end mb-2';
+            row.innerHTML = `
+                <input name="variants[${i}][size]" value="${prefill.size || ''}" placeholder="Size" class="input-field text-sm">
+                <input name="variants[${i}][color]" value="${prefill.color || ''}" placeholder="Color" class="input-field text-sm">
+                <input name="variants[${i}][material]" value="${prefill.material || ''}" placeholder="Material" class="input-field text-sm">
+                <input name="variants[${i}][price_override]" value="${prefill.price_override || ''}" placeholder="Price" type="number" step="0.01" class="input-field text-sm">
+                <input name="variants[${i}][stock]" value="${prefill.stock || ''}" placeholder="Stock" type="number" class="input-field text-sm">
+                <input name="variants[${i}][sku]" value="${prefill.sku || ''}" placeholder="SKU" class="input-field text-sm">
+                <button type="button" onclick="this.parentNode.remove()" class="text-red-500 p-2" title="Remove">✕</button>
+            `;
+            wrap.appendChild(row);
+        }
+    </script>
 @endsection

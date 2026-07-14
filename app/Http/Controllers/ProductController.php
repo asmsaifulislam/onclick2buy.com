@@ -20,7 +20,8 @@ class ProductController extends Controller
         $userReview = auth()->check() ? $product->reviews->where('user_id', auth()->id())->first() : null;
         $related = Product::active()->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)->take(4)->get();
-        return view('products.show', compact('product', 'related', 'avgRating', 'userReview'));
+        return view('products.show', compact('product', 'related', 'avgRating', 'userReview'))
+            ->with('productVariants', $product->productVariants);
     }
     public function category(Category $category)
     {

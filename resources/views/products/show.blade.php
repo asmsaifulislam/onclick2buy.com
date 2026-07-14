@@ -50,7 +50,7 @@
                     <span class="text-sm font-medium text-gray-600">{{ $avgRating > 0 ? $avgRating : 'No' }} ({{ $product->reviews->count() }} {{ $product->reviews->count() === 1 ? 'review' : 'reviews' }})</span>
                 </div>
             </div>
-            <div class="flex items-baseline gap-3">
+            <div class="flex items-baseline gap-3" id="priceContainer">
                 @if($product->sale_price)
                     <span class="text-4xl font-extrabold text-red-600">৳{{ number_format($product->sale_price, 2) }}</span>
                     <span class="text-xl text-gray-400 line-through">৳{{ number_format($product->price, 2) }}</span>
@@ -65,7 +65,7 @@
             <div class="flex items-center gap-4 text-sm">
                 <div class="flex items-center gap-2 bg-gray-50 px-4 py-2 rounded-lg">
                     <svg class="w-5 h-5 {{ $product->stock > 0 ? 'text-green-500' : 'text-red-500' }}" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                    <span class="font-medium {{ $product->stock > 0 ? 'text-green-700' : 'text-red-700' }}">{{ $product->stock > 0 ? 'In Stock (' . $product->stock . ' available)' : 'Out of Stock' }}</span>
+                    <span id="stockStatus" class="font-medium {{ $product->stock > 0 ? 'text-green-700' : 'text-red-700' }}">{{ $product->stock > 0 ? 'In Stock (' . $product->stock . ' available)' : 'Out of Stock' }}</span>
                 </div>
                 @if($product->sku)
                     <div class="text-gray-400">SKU: <span class="font-mono">{{ $product->sku }}</span></div>
@@ -94,6 +94,7 @@
                     <input type="hidden" name="variant_size" id="variant_size" value="">
                     <input type="hidden" name="variant_color" id="variant_color" value="">
                     <input type="hidden" name="variant_material" id="variant_material" value="">
+                    <input type="hidden" name="variant_id" id="variant_id" value="">
                     <div class="flex items-center gap-3">
                         <label class="font-medium text-gray-700 whitespace-nowrap">Qty:</label>
                         <input type="number" name="quantity" value="1" min="1" max="{{ $product->stock }}" class="w-20 input-field text-center py-2">
@@ -258,6 +259,59 @@
             v.addEventListener('pointercancel', () => dragging = false);
         })();
 
+        const productVariants = @json($productVariants ?? []);
+        const basePrice = parseFloat('{{ $product->sale_price ?: $product->price }}');
+        const priceContainer = document.getElementById('priceContainer');
+        const defaultPriceHtml = priceContainer.innerHTML;
+        const stockStatus = document.getElementById('stockStatus');
+        const buyForm = document.getElementById('buyForm');
+
+        function selectedAttrs() {
+            const a = {};
+            ['size', 'color', 'material'].forEach(k => {
+                const v = document.getElementById('variant_' + k)?.value;
+                if (v) a[k] = v;
+            });
+            return a;
+        }
+        function findVariant() {
+            const sel = selectedAttrs();
+            return productVariants.find(v => {
+                const va = v.attributes || {};
+                return Object.keys(sel).every(k => String(va[k]) === String(sel[k]));
+            });
+        }
+        function updateVariant() {
+            const v = findVariant();
+            const idInput = document.getElementById('variant_id');
+            if (v) {
+                if (idInput) idInput.value = v.id;
+                const price = v.price_override ? parseFloat(v.price_override) : basePrice;
+                priceContainer.innerHTML = '<span class="text-4xl font-extrabold text-gray-900">৳' + price.toFixed(2) + '</span>';
+                if (v.stock > 0) {
+                    stockStatus.className = 'font-medium text-green-700';
+                    stockStatus.textContent = 'In Stock (' + v.stock + ' available)';
+                } else {
+                    stockStatus.className = 'font-medium text-red-700';
+                    stockStatus.textContent = 'Out of Stock';
+                }
+            } else {
+                if (idInput) idInput.value = '';
+                priceContainer.innerHTML = defaultPriceHtml;
+                @if($product->stock > 0)
+                    stockStatus.className = 'font-medium text-green-700';
+                    stockStatus.textContent = 'In Stock ({{ $product->stock }} available)';
+                @else
+                    stockStatus.className = 'font-medium text-red-700';
+                    stockStatus.textContent = 'Out of Stock';
+                @endif
+            }
+            if (buyForm) {
+                const out = v && v.stock <= 0;
+                buyForm.querySelectorAll('button[type="submit"]').forEach(b => b.disabled = out);
+            }
+        }
+
         document.querySelectorAll('.variant-chip').forEach(chip => {
             chip.addEventListener('click', () => {
                 const group = chip.closest('[data-variant-group]');
@@ -266,6 +320,7 @@
                 const key = group.dataset.variantGroup;
                 const input = document.getElementById('variant_' + key);
                 if (input) input.value = chip.dataset.value;
+                updateVariant();
             });
         });
 
