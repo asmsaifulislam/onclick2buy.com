@@ -8,9 +8,12 @@
 </head>
 <body class="antialiased bg-gray-50">
     <div class="flex min-h-screen overflow-hidden">
-        <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-20 hidden md:hidden"></div>
-        <aside id="sidebar" class="fixed md:relative inset-y-0 left-0 z-30 w-64 bg-gray-900 text-white flex-shrink-0 flex-col h-screen -translate-x-full md:translate-x-0 md:hover:w-80 md:group-hover:w-80 md:transition-[width] md:duration-300 md:ease-in-out transition-[width] duration-300 ease-in-out group hover:shadow-2xl">
-            <div class="p-5 border-b border-gray-800">
+        <div id="sidebar-overlay" onclick="toggleSidebar(event)" class="fixed inset-0 bg-black/50 z-20 hidden"></div>
+        <button id="sidebar-toggle" onclick="toggleSidebar(event)" class="fixed top-4 left-4 z-40 p-2 rounded-lg bg-gray-900 text-white shadow-lg hover:bg-gray-800 transition-colors" aria-label="Toggle menu">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+        </button>
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-64 bg-gray-900 text-white flex flex-shrink-0 flex-col h-screen -translate-x-full transition-transform duration-300 ease-in-out shadow-2xl">
+            <div class="p-5 border-b border-gray-800 flex items-center justify-between">
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-1.5">
                     <svg class="w-5 h-5 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
                     <span class="text-base font-bold text-white tracking-tight">OnClick<span class="text-indigo-400">2</span>Buy</span>
@@ -154,9 +157,6 @@
         <div class="flex-1 flex flex-col overflow-hidden">
             <header class="bg-white shadow-sm border-b border-gray-200 px-4 md:px-6 py-4 flex items-center justify-between md:justify-end">
                 <div class="md:hidden flex items-center gap-2">
-                    <button onclick="toggleSidebar()" class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
-                    </button>
                     <span class="flex items-center gap-1 text-sm font-bold text-gray-800 tracking-tight">OnClick<span class="text-indigo-600">2</span>Buy</span>
                 </div>
                 <div class="flex items-center gap-3">
@@ -182,16 +182,32 @@
         </div>
     </div>
     <script>
-    function toggleSidebar() {
+    function toggleSidebar(e) {
+        if (e) e.stopPropagation();
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebar-overlay');
-        if (window.innerWidth < 768) {
-            sidebar.classList.toggle('-translate-x-full');
-            overlay.classList.toggle('hidden');
+        const isHidden = sidebar.classList.toggle('-translate-x-full');
+        if (isHidden) {
+            overlay.classList.add('hidden');
         } else {
-            sidebar.classList.toggle('-translate-x-64');
+            overlay.classList.remove('hidden');
         }
     }
+    function closeSidebar() {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('sidebar-overlay');
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+    }
+    document.addEventListener('click', function(e) {
+        const sidebar = document.getElementById('sidebar');
+        const toggle = document.getElementById('sidebar-toggle');
+        if (!sidebar.classList.contains('-translate-x-full')) {
+            if (!sidebar.contains(e.target) && !toggle.contains(e.target)) {
+                closeSidebar();
+            }
+        }
+    });
     </script>
 </body>
 </html>
