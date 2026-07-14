@@ -29,6 +29,9 @@ class CartController extends Controller
                 'quantity' => $quantity,
             ]);
         }
+        if ($request->buy_now) {
+            return redirect()->route('checkout.index');
+        }
         return redirect()->route('cart.index')->with('success', 'Product added to cart!');
     }
     public function update(Request $request, Cart $cart)

@@ -3,19 +3,30 @@
 @section('content')
     <div class="grid grid-cols-1 md:grid-cols-2 gap-10 animate-fade-in-up">
         <div>
-            <div class="image-zoom rounded-2xl shadow-lg overflow-hidden bg-white">
+            <div id="mainImageWrap" class="relative rounded-2xl shadow-lg overflow-hidden bg-white">
                 @if($product->images && count($product->images) > 0)
-                    <img src="{{ $product->images[0] }}" alt="{{ $product->name }}" class="w-full h-64 sm:h-96 md:h-[500px] object-cover">
+                    <img id="mainImage" src="{{ $product->images[0] }}" alt="{{ $product->name }}" class="image-zoom w-full h-64 sm:h-96 md:h-[500px] object-cover cursor-zoom-in" onclick="openZoom()">
                 @else
                     <div class="h-64 sm:h-96 md:h-[500px] bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center text-gray-400">
                         <svg class="w-20 h-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     </div>
                 @endif
+                @if($product->images && count($product->images) > 1)
+                    <button type="button" id="btn360" onclick="toggle360()" class="absolute top-3 right-3 z-10 flex items-center gap-1 bg-gray-900/80 text-white text-xs font-bold px-3 py-1.5 rounded-full hover:bg-indigo-600 transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v8l4 2M12 4a8 8 0 11-8 8m0 0a8 8 0 018-8"/></svg>
+                        360&deg; View
+                    </button>
+                @endif
+                <div id="viewer360" class="hidden absolute inset-0 bg-white flex items-center justify-center cursor-ew-resize select-none touch-none">
+                    <img id="spinImage" src="{{ $product->images[0] ?? '' }}" class="max-h-full max-w-full object-contain pointer-events-none">
+                    <span class="absolute bottom-3 text-xs text-gray-500 bg-white/80 px-3 py-1 rounded-full shadow">Drag left / right to rotate</span>
+                    <button type="button" onclick="toggle360()" class="absolute top-3 right-3 bg-gray-900 text-white text-xs px-3 py-1.5 rounded-full">Close</button>
+                </div>
             </div>
             @if($product->images && count($product->images) > 1)
                 <div class="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-3">
-                    @foreach($product->images as $image)
-                        <div class="image-zoom rounded-lg overflow-hidden cursor-pointer border-2 border-transparent hover:border-indigo-400 transition-all">
+                    @foreach($product->images as $idx => $image)
+                        <div class="image-zoom rounded-lg overflow-hidden cursor-pointer border-2 {{ $idx === 0 ? 'border-indigo-500' : 'border-transparent' }} hover:border-indigo-400 transition-all" onclick="setMainImage('{{ $image }}', this)">
                             <img src="{{ $image }}" class="h-16 w-full object-cover">
                         </div>
                     @endforeach
@@ -57,8 +68,9 @@
                 @endif
             </div>
             @if($product->stock > 0)
-                <form action="{{ route('cart.add', $product) }}" method="POST" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-4 bg-gray-50 rounded-xl">
+                <form id="buyForm" action="{{ route('cart.add', $product) }}" method="POST" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-4 bg-gray-50 rounded-xl">
                     @csrf
+                    <input type="hidden" name="buy_now" id="buyNowFlag" value="0">
                     <div class="flex items-center gap-3">
                         <label class="font-medium text-gray-700 whitespace-nowrap">Qty:</label>
                         <input type="number" name="quantity" value="1" min="1" max="{{ $product->stock }}" class="w-20 input-field text-center py-2">
@@ -66,6 +78,10 @@
                     <button type="submit" class="btn-primary flex-1 flex items-center justify-center gap-2 py-3">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg>
                         Add to Cart
+                    </button>
+                    <button type="submit" onclick="document.getElementById('buyNowFlag').value='1'" class="px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-bold rounded-xl hover:from-green-700 hover:to-emerald-700 transition-all duration-300 shadow-lg hover:shadow-xl flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2zm0 0a2 2 0 002 2h2a2 2 0 002-2m-6 0h.01M9 16h.01"/></svg>
+                        Buy Now
                     </button>
                 </form>
             @else
@@ -145,7 +161,54 @@
         @endif
     </section>
 
+    <div id="zoomModal" class="fixed inset-0 z-50 hidden bg-black/80 flex items-center justify-center p-4 cursor-zoom-out" onclick="closeZoom()">
+        <img id="zoomImage" src="" class="max-w-full max-h-full object-contain rounded-lg shadow-2xl">
+        <button type="button" class="absolute top-4 right-6 text-white text-4xl leading-none" onclick="closeZoom()">&times;</button>
+    </div>
+
     <script>
+        const spinImages = @json($product->images ?? []);
+        let spinIndex = 0;
+
+        function setMainImage(src, el) {
+            const main = document.getElementById('mainImage');
+            if (main) main.src = src;
+            document.querySelectorAll('[onclick^="setMainImage"]').forEach(d => d.classList.remove('border-indigo-500'));
+            if (el) el.classList.add('border-indigo-500');
+        }
+        function openZoom() {
+            const main = document.getElementById('mainImage');
+            const zm = document.getElementById('zoomImage');
+            if (main && zm) { zm.src = main.src; document.getElementById('zoomModal').classList.remove('hidden'); }
+        }
+        function closeZoom() { document.getElementById('zoomModal').classList.add('hidden'); }
+        function toggle360() {
+            const v = document.getElementById('viewer360');
+            if (!v) return;
+            if (v.classList.contains('hidden')) {
+                v.classList.remove('hidden');
+                spinIndex = 0;
+                document.getElementById('spinImage').src = spinImages[0];
+            } else {
+                v.classList.add('hidden');
+            }
+        }
+        (function () {
+            const v = document.getElementById('viewer360');
+            if (!v) return;
+            let dragging = false, startX = 0, startIdx = 0;
+            v.addEventListener('pointerdown', e => { dragging = true; startX = e.clientX; startIdx = spinIndex; v.setPointerCapture(e.pointerId); });
+            v.addEventListener('pointermove', e => {
+                if (!dragging || spinImages.length < 2) return;
+                const delta = Math.round((e.clientX - startX) / 40);
+                let idx = (startIdx - delta) % spinImages.length;
+                if (idx < 0) idx += spinImages.length;
+                if (idx !== spinIndex) { spinIndex = idx; document.getElementById('spinImage').src = spinImages[idx]; }
+            });
+            v.addEventListener('pointerup', () => dragging = false);
+            v.addEventListener('pointercancel', () => dragging = false);
+        })();
+
         document.getElementById('starPicker')?.addEventListener('click', function(e) {
             const btn = e.target.closest('.star-btn');
             if (!btn) return;
