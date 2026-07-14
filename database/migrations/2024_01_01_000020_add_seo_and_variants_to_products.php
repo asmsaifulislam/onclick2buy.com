@@ -9,17 +9,27 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->string('meta_title')->nullable()->after('slug');
-            $table->text('meta_description')->nullable()->after('meta_title');
-            $table->string('meta_keywords')->nullable()->after('meta_description');
-            $table->json('variants')->nullable()->after('images');
+            if (!Schema::hasColumn('products', 'meta_title')) {
+                $table->string('meta_title')->nullable()->after('slug');
+            }
+            if (!Schema::hasColumn('products', 'meta_description')) {
+                $table->text('meta_description')->nullable()->after('meta_title');
+            }
+            if (!Schema::hasColumn('products', 'meta_keywords')) {
+                $table->string('meta_keywords')->nullable()->after('meta_description');
+            }
+            if (!Schema::hasColumn('products', 'variants')) {
+                $table->json('variants')->nullable()->after('images');
+            }
         });
     }
 
     public function down(): void
     {
         Schema::table('products', function (Blueprint $table) {
-            $table->dropColumn(['meta_title', 'meta_description', 'meta_keywords', 'variants']);
+            if (Schema::hasColumn('products', 'meta_title')) {
+                $table->dropColumn(['meta_title', 'meta_description', 'meta_keywords', 'variants']);
+            }
         });
     }
 };
