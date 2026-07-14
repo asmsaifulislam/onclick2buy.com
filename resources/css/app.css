@@ -234,3 +234,27 @@
 .footer-gradient {
     background: linear-gradient(135deg, #0f0f23, #1a1a3e, #0f0f23);
 }
+
+/* Sidebar scrollbar — dynamic, matches app indigo theme */
+#sidebar nav {
+    scrollbar-width: thin;
+    scrollbar-color: #6366f1 transparent;
+}
+#sidebar nav::-webkit-scrollbar {
+    width: 8px;
+}
+#sidebar nav::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.04);
+    border-radius: 9999px;
+}
+#sidebar nav::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #6366f1, #818cf8);
+    border-radius: 9999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+    transition: background 0.3s ease;
+}
+#sidebar nav::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #818cf8, #a5b4fc);
+    background-clip: padding-box;
+}
