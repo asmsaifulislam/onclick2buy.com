@@ -17,6 +17,7 @@ use App\Http\Controllers\Admin\BiController;
 use App\Http\Controllers\Admin\InventoryController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\UserOrderController;
+use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\Admin\ChatController as AdminChatController;
 use App\Http\Controllers\Admin\ProductPunchController;
@@ -65,6 +66,9 @@ Route::post('/products/{product}/reviews', [ReviewController::class, 'store'])->
 Route::middleware('auth')->group(function () {
     Route::get('/my-orders', [UserOrderController::class, 'index'])->name('orders.index');
     Route::get('/my-orders/{order}', [UserOrderController::class, 'show'])->name('orders.show');
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::post('/wishlist/{product}', [WishlistController::class, 'store'])->name('wishlist.store');
+    Route::delete('/wishlist/{product}', [WishlistController::class, 'destroy'])->name('wishlist.destroy');
 });
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {

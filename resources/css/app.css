@@ -214,6 +214,12 @@
     box-shadow: inset 4px 0 0 #c7d2fe;
 }
 
+.variant-chip.selected {
+    border-color: #4f46e5;
+    background: #eef2ff;
+    color: #4f46e5;
+}
+
 .scroll-fade-in {
     opacity: 0;
     transform: translateY(20px);

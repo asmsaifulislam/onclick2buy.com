@@ -22,11 +22,16 @@ class CartController extends Controller
         if ($cartItem) {
             $cartItem->increment('quantity', $quantity);
         } else {
+            $options = [];
+            if ($request->variant_size) $options['size'] = $request->variant_size;
+            if ($request->variant_color) $options['color'] = $request->variant_color;
+            if ($request->variant_material) $options['material'] = $request->variant_material;
             Cart::create([
                 'user_id' => Auth::id(),
                 'session_id' => session()->getId(),
                 'product_id' => $product->id,
                 'quantity' => $quantity,
+                'options' => $options ?: null,
             ]);
         }
         if ($request->buy_now) {

@@ -26,6 +26,11 @@
                         </div>
                         <div class="min-w-0 flex-1">
                             <h3 class="font-semibold text-gray-800 truncate">{{ $item->product->name }}</h3>
+                            @if($item->options)
+                                <p class="text-xs text-gray-400">
+                                    @foreach($item->options as $k => $v){{ ucfirst($k) }}: {{ $v }}@if(!$loop->last) · @endif @endforeach
+                                </p>
+                            @endif
                             <p class="text-sm text-gray-500">৳{{ number_format($price, 2) }} each</p>
                         </div>
                     </div>

@@ -59,6 +59,7 @@ class CheckoutController extends Controller
                     'product_name' => $item->product->name,
                     'price' => $item->product->sale_price ?: $item->product->price,
                     'quantity' => $item->quantity,
+                    'options' => $item->options,
                 ]);
                 $item->product->decrement('stock', $item->quantity);
                 $item->delete();

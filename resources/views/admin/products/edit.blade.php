@@ -53,6 +53,40 @@
             <label class="block mb-2 font-medium text-gray-700">Description</label>
             <textarea name="description" rows="4" class="input-field" placeholder="Product description...">{{ old('description', $product->description) }}</textarea>
         </div>
+        <div class="mb-4 p-4 bg-indigo-50/50 rounded-xl border border-indigo-100">
+            <h3 class="font-semibold text-gray-800 mb-3">Variants (Size / Color / Material)</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Sizes</label>
+                    <input type="text" name="variant_sizes" value="{{ old('variant_sizes', $product->variants['size'] ? implode(', ', $product->variants['size']) : '') }}" class="input-field" placeholder="S, M, L, XL">
+                </div>
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Colors</label>
+                    <input type="text" name="variant_colors" value="{{ old('variant_colors', $product->variants['color'] ? implode(', ', $product->variants['color']) : '') }}" class="input-field" placeholder="Red, Blue, Green">
+                </div>
+                <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-700">Materials</label>
+                    <input type="text" name="variant_materials" value="{{ old('variant_materials', $product->variants['material'] ? implode(', ', $product->variants['material']) : '') }}" class="input-field" placeholder="Cotton, Wool">
+                </div>
+            </div>
+        </div>
+        <div class="mb-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+            <h3 class="font-semibold text-gray-800 mb-3">SEO Metadata</h3>
+            <div class="space-y-3">
+                <div>
+                    <label class="block mb-1 text-sm font-medium text-gray-700">Meta Title</label>
+                    <input type="text" name="meta_title" value="{{ old('meta_title', $product->meta_title) }}" class="input-field" placeholder="SEO title (leave blank to use product name)" maxlength="255">
+                </div>
+                <div>
+                    <label class="block mb-1 text-sm font-medium text-gray-700">Meta Description</label>
+                    <textarea name="meta_description" rows="2" class="input-field" placeholder="Short description for search engines" maxlength="500">{{ old('meta_description', $product->meta_description) }}</textarea>
+                </div>
+                <div>
+                    <label class="block mb-1 text-sm font-medium text-gray-700">Meta Keywords</label>
+                    <input type="text" name="meta_keywords" value="{{ old('meta_keywords', $product->meta_keywords) }}" class="input-field" placeholder="keyword1, keyword2, keyword3" maxlength="255">
+                </div>
+            </div>
+        </div>
         <div class="mb-4">
             <label class="block mb-2 font-medium text-gray-700">Images</label>
             <input type="file" name="images[]" multiple class="input-file w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 transition-colors" accept="image/*">

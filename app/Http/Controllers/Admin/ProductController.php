@@ -34,9 +34,16 @@ class ProductController extends Controller
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
             'is_active' => 'boolean',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:500',
+            'meta_keywords' => 'nullable|string|max:255',
+            'variant_sizes' => 'nullable|string',
+            'variant_colors' => 'nullable|string',
+            'variant_materials' => 'nullable|string',
         ]);
         $data = $request->except('images');
         $data['slug'] = Str::slug($request->name);
+        $data['variants'] = $this->parseVariants($request);
         if (!Category::where('id', $request->category_id)->exists()) {
             return back()->withErrors(['category_id' => 'Category not found'])->withInput();
         }
@@ -68,9 +75,16 @@ class ProductController extends Controller
             'images' => 'nullable|array',
             'images.*' => 'image|mimes:jpeg,png,jpg,webp|max:2048',
             'is_active' => 'boolean',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:500',
+            'meta_keywords' => 'nullable|string|max:255',
+            'variant_sizes' => 'nullable|string',
+            'variant_colors' => 'nullable|string',
+            'variant_materials' => 'nullable|string',
         ]);
         $data = $request->except('images');
         $data['slug'] = Str::slug($request->name);
+        $data['variants'] = $this->parseVariants($request);
         if ($request->hasFile('images')) {
             $paths = [];
             foreach ($request->file('images') as $image) {
@@ -91,5 +105,20 @@ class ProductController extends Controller
         $product->update(['is_active' => !$product->is_active]);
         $status = $product->is_active ? 'activated' : 'deactivated';
         return back()->with('success', "Product {$status} successfully!");
+    }
+
+    private function parseVariants(Request $request): ?array
+    {
+        $variants = [];
+        if ($request->variant_sizes) {
+            $variants['size'] = array_filter(array_map('trim', explode(',', $request->variant_sizes)));
+        }
+        if ($request->variant_colors) {
+            $variants['color'] = array_filter(array_map('trim', explode(',', $request->variant_colors)));
+        }
+        if ($request->variant_materials) {
+            $variants['material'] = array_filter(array_map('trim', explode(',', $request->variant_materials)));
+        }
+        return $variants ?: null;
     }
 }

@@ -19,6 +19,7 @@
     <meta name="description" content="{{ $metaDesc }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', $storeName)</title>
+    @yield('meta')
     @if(config('app.google_analytics_id'))
         <script async src="https://www.googletagmanager.com/gtag/js?id={{ config('app.google_analytics_id') }}"></script>
         <script>
@@ -79,6 +80,15 @@
                             <span class="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold rounded-full h-5 min-w-[20px] flex items-center justify-center px-1 shadow-lg animate-fade-in">{{ $cartCount }}</span>
                         @endif
                     </a>
+                    @auth
+                        <a href="{{ route('wishlist.index') }}" class="relative p-2 text-gray-600 hover:text-red-500 transition-colors duration-300 group">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                            @php $wishCount = \App\Models\Wishlist::where('user_id', auth()->id())->count(); @endphp
+                            @if($wishCount > 0)
+                                <span class="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold rounded-full h-5 min-w-[20px] flex items-center justify-center px-1 shadow-lg animate-fade-in">{{ $wishCount }}</span>
+                            @endif
+                        </a>
+                    @endauth
                     @auth
                         <div class="hidden md:flex items-center space-x-3">
                             @if(auth()->user()->isAdmin())

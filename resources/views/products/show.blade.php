@@ -1,5 +1,9 @@
 @extends('layouts.app')
-@section('title', $product->name)
+@section('title', $product->meta_title ?: $product->name)
+@section('meta')
+    <meta name="description" content="{{ $product->meta_description ?: \Illuminate\Support\Str::limit(strip_tags($product->description ?? ''), 160) }}">
+    @if($product->meta_keywords)<meta name="keywords" content="{{ $product->meta_keywords }}">@endif
+@endsection
 @section('content')
     <div class="grid grid-cols-1 md:grid-cols-2 gap-10 animate-fade-in-up">
         <div>
@@ -67,10 +71,29 @@
                     <div class="text-gray-400">SKU: <span class="font-mono">{{ $product->sku }}</span></div>
                 @endif
             </div>
+            @if($product->variants)
+                <div class="space-y-4">
+                    @foreach(['size' => 'Size', 'color' => 'Color', 'material' => 'Material'] as $vKey => $vLabel)
+                        @if(!empty($product->variants[$vKey]))
+                            <div>
+                                <p class="text-sm font-semibold text-gray-700 mb-2">{{ $vLabel }}</p>
+                                <div class="flex flex-wrap gap-2" data-variant-group="{{ $vKey }}">
+                                    @foreach($product->variants[$vKey] as $vVal)
+                                        <button type="button" class="variant-chip px-4 py-2 rounded-lg border-2 border-gray-200 text-sm font-medium text-gray-700 hover:border-indigo-400 transition-all" data-value="{{ $vVal }}">{{ $vVal }}</button>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+                    @endforeach
+                </div>
+            @endif
             @if($product->stock > 0)
                 <form id="buyForm" action="{{ route('cart.add', $product) }}" method="POST" class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 p-4 bg-gray-50 rounded-xl">
                     @csrf
                     <input type="hidden" name="buy_now" id="buyNowFlag" value="0">
+                    <input type="hidden" name="variant_size" id="variant_size" value="">
+                    <input type="hidden" name="variant_color" id="variant_color" value="">
+                    <input type="hidden" name="variant_material" id="variant_material" value="">
                     <div class="flex items-center gap-3">
                         <label class="font-medium text-gray-700 whitespace-nowrap">Qty:</label>
                         <input type="number" name="quantity" value="1" min="1" max="{{ $product->stock }}" class="w-20 input-field text-center py-2">
@@ -87,6 +110,32 @@
             @else
                 <button disabled class="w-full bg-gray-200 text-gray-500 py-3.5 rounded-xl font-bold cursor-not-allowed text-lg">Out of Stock</button>
             @endif
+            <div class="mt-3">
+                @auth
+                    @if($product->isWishlisted())
+                        <form action="{{ route('wishlist.destroy', $product) }}" method="POST">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border-2 border-red-200 text-red-600 font-medium hover:bg-red-50 transition-colors">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd"/></svg>
+                                Saved to Wishlist
+                            </button>
+                        </form>
+                    @else
+                        <form action="{{ route('wishlist.store', $product) }}" method="POST">
+                            @csrf
+                            <button type="submit" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border-2 border-gray-200 text-gray-600 font-medium hover:border-red-300 hover:text-red-600 transition-colors">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                                Add to Wishlist
+                            </button>
+                        </form>
+                    @endif
+                @else
+                    <a href="{{ route('login') }}" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border-2 border-gray-200 text-gray-600 font-medium hover:border-red-300 hover:text-red-600 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                        Add to Wishlist
+                    </a>
+                @endauth
+            </div>
             <div class="border-t pt-5 flex items-center gap-4 text-sm text-gray-500">
                 <div class="flex items-center gap-1"><svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg> Secure checkout</div>
                 <div class="flex items-center gap-1"><svg class="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path d="M8 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0zM15 16.5a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z"/><path d="M3 4h1.5l2.5 7h8.5l2-6H7.5L6 3H3v1z"/></svg> Free shipping over ৳500</div>
@@ -208,6 +257,17 @@
             v.addEventListener('pointerup', () => dragging = false);
             v.addEventListener('pointercancel', () => dragging = false);
         })();
+
+        document.querySelectorAll('.variant-chip').forEach(chip => {
+            chip.addEventListener('click', () => {
+                const group = chip.closest('[data-variant-group]');
+                group.querySelectorAll('.variant-chip').forEach(c => c.classList.remove('selected'));
+                chip.classList.add('selected');
+                const key = group.dataset.variantGroup;
+                const input = document.getElementById('variant_' + key);
+                if (input) input.value = chip.dataset.value;
+            });
+        });
 
         document.getElementById('starPicker')?.addEventListener('click', function(e) {
             const btn = e.target.closest('.star-btn');
