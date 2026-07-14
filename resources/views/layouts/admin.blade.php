@@ -9,7 +9,7 @@
 <body class="antialiased bg-gray-50">
     <div class="flex min-h-screen overflow-hidden">
         <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-20 hidden"></div>
-        <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-64 bg-gray-900 text-white flex-shrink-0 flex-col h-screen transform -translate-x-full transition-transform duration-300 ease-in-out">
+        <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-64 bg-gray-900 text-white flex flex-shrink-0 flex-col h-screen transform -translate-x-full transition-transform duration-300 ease-in-out">
             <div class="p-5 border-b border-gray-800">
                 <a href="{{ route('admin.dashboard') }}" class="flex items-center gap-1.5">
                     <svg class="w-5 h-5 text-indigo-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M12 8v8M8 12h8"/></svg>
